@@ -1,8 +1,11 @@
 name: "ssm"
-version: "0.1.1"
+version: "1.0.0"
 usage: "Inject AWS SSM parameters into Helm values files"
 description: |-
   Inject AWS SSM parameters into Helm values files
 ignoreFlags: false
 useTunnel: false
 command: "$HELM_PLUGIN_DIR/helm-ssm"
+hooks:
+  install: chmod +x $HELM_PLUGIN_DIR/helm-ssm
+  update: chmod +x $HELM_PLUGIN_DIR/helm-ssm
