@@ -10,8 +10,6 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 
-	"github.com/aws/aws-sdk-go/aws" // TODO try to put all aws stuff on ssm
-	"github.com/aws/aws-sdk-go/service/ssm"
 	"k8s.io/helm/pkg/engine"
 )
 
@@ -57,23 +55,21 @@ func GetFuncMap() template.FuncMap {
 }
 
 func resolveSSMParameter(awsSession *session.Session, ssmPath string, options []string) (string, error) {
+	var res string
+	var ssmErr error
+
 	opts, err := handleOptions(options)
 	if err != nil {
-		return "", err
+		return res, err
 	}
 	required, _ := strconv.ParseBool(opts["required"])
-	var svc *ssm.SSM
 	if region, exists := opts["region"]; exists {
-		svc = ssm.New(awsSession, aws.NewConfig().WithRegion(region))
-	} else {
-		svc = ssm.New(awsSession)
-	}
+		res, ssmErr = GetSSMParameterR(opts["prefix"]+ssmPath, required, region)
 
-	res, err := GetSSMParameter(svc, opts["prefix"]+ssmPath, required, false)
-	if err != nil {
-		return "", err
+	} else {
+		res, ssmErr = GetSSMParameter(opts["prefix"]+ssmPath, required)
 	}
-	return res, nil
+	return res, ssmErr
 }
 
 func handleOptions(options []string) (map[string]string, error) {
