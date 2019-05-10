@@ -34,10 +34,13 @@ test: bootstrap
 dist:
 	mkdir -p $(DIST)
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${HELM_PLUGIN_NAME} -ldflags $(LDFLAGS) ./cmd
+	chmod +x ${HELM_PLUGIN_NAME}
 	tar -zcvf $(DIST)/${HELM_PLUGIN_NAME}-linux-$(VERSION).tgz ${HELM_PLUGIN_NAME} README.md LICENSE plugin.yaml
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ${HELM_PLUGIN_NAME} -ldflags $(LDFLAGS) ./cmd
+	chmod +x ${HELM_PLUGIN_NAME}
 	tar -zcvf $(DIST)/${HELM_PLUGIN_NAME}-macos-$(VERSION).tgz ${HELM_PLUGIN_NAME} README.md LICENSE plugin.yaml
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ${HELM_PLUGIN_NAME}.exe -ldflags $(LDFLAGS) ./cmd
+	chmod +x ${HELM_PLUGIN_NAME}
 	tar -zcvf $(DIST)/${HELM_PLUGIN_NAME}-windows-$(VERSION).tgz ${HELM_PLUGIN_NAME}.exe README.md LICENSE plugin.yaml
 	rm ${HELM_PLUGIN_NAME}
 	rm ${HELM_PLUGIN_NAME}.exe
