@@ -9,6 +9,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var valueFiles valueFilesList
+var verbose bool
+var dryRun bool
+
+type valueFilesList []string
+
+func (v *valueFilesList) String() string {
+	return fmt.Sprint(*v)
+}
+
+func (v *valueFilesList) Type() string {
+	return "valueFilesList"
+}
+
+func (v *valueFilesList) Set(value string) error {
+	for _, filePath := range strings.Split(value, ",") {
+		*v = append(*v, filePath)
+	}
+	return nil
+}
+
 func main() {
 	cmd := &cobra.Command{
 		Use:   "ssm [flags]",
@@ -34,27 +55,6 @@ func run(cmd *cobra.Command, args []string) error {
 		if err := hssm.ExecuteTemplate(filePath, funcMap, verbose, dryRun); err != nil {
 			return err
 		}
-	}
-	return nil
-}
-
-var valueFiles valueFilesList
-var verbose bool
-var dryRun bool
-
-type valueFilesList []string
-
-func (v *valueFilesList) String() string {
-	return fmt.Sprint(*v)
-}
-
-func (v *valueFilesList) Type() string {
-	return "valueFilesList"
-}
-
-func (v *valueFilesList) Set(value string) error {
-	for _, filePath := range strings.Split(value, ",") {
-		*v = append(*v, filePath)
 	}
 	return nil
 }
