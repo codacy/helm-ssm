@@ -59,19 +59,19 @@ appropriate version for your OS:
 ### Linux
 
 ```sh
-$ helm plugin install https://github.com/codacy/helm-ssm-linux-0.1.1.tgz
+$ helm plugin install https://github.com/codacy/helm-ssm/releases/download/latest/helm-ssm-linux.tgz
 ```
 
 ### MacOS
 
 ```sh
-$ helm plugin install https://github.com/codacy/helm-ssm-linux-0.1.1.tgz
+$ helm plugin install https://github.com/codacy/helm-ssm/releases/download/latest/helm-ssm-macos.tgz
 ```
 
 ### Windows
 
 ```sh
-$ helm plugin install https://github.com/codacy/helm-ssm-linux-0.1.1.tgz
+$ helm plugin install https://github.com/codacy/helm-ssm/releases/download/latest/helm-ssm-windows.tgz
 ```
 
 ### Developer (From Source) Install
