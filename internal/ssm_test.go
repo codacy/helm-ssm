@@ -18,9 +18,9 @@ type GetSSMParameterTestValue struct {
 var ssmTestValues = map[string]GetSSMParameterTestValue{
 	"/root/parameter1": GetSSMParameterTestValue{"/root/parameter1", false, false, "value1"},
 	"/root/parameter2": GetSSMParameterTestValue{"/root/parameter2", false, false, "value2"},
-	"/root/parameter3": GetSSMParameterTestValue{"/root/parameter2", false, false, "value2"},
-	"/root/parameter4": GetSSMParameterTestValue{"/root/parameter2", false, false, "value2"},
-	"/root/parameter5": GetSSMParameterTestValue{"/root/parameter2", false, false, "value2"},
+	"/root/parameter3": GetSSMParameterTestValue{"/root/parameter3", false, false, "value3"},
+	"/root/parameter4": GetSSMParameterTestValue{"/root/parameter4", false, false, "value4"},
+	"/root/parameter5": GetSSMParameterTestValue{"/root/parameter5", false, false, "value5"},
 }
 
 type mockSSMClient struct {

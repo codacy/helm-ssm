@@ -10,7 +10,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 
-	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws" // TODO try to put all aws stuff on ssm
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"k8s.io/helm/pkg/engine"
 )
@@ -77,11 +77,16 @@ func resolveSSMParameter(awsSession *session.Session, ssmPath string, options []
 }
 
 func handleOptions(options []string) (map[string]string, error) {
+	validOptions := []string{
+		"required",
+		"prefix",
+		"region",
+	}
 	opts := map[string]string{}
 	for _, o := range options {
 		split := strings.Split(o, "=")
 		if len(split) != 2 {
-			return nil, fmt.Errorf("Invalid option: %s", o)
+			return nil, fmt.Errorf("Invalid option: %s. Valid options: %s", o, validOptions)
 		}
 		opts[split[0]] = split[1]
 	}
