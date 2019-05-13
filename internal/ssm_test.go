@@ -33,12 +33,23 @@ func TestGetSSMParameter(t *testing.T) {
 
 	for k, v := range ssmTestValues {
 		t.Logf("Key: %s should have value: %s", k, v.expectedValue)
-		value, err := GetSSMParameter(mockSvc, v.path, v.required, v.decrypt)
+		value, err := getSSMParameter(mockSvc, v.path, v.required, v.decrypt)
 		if err != nil {
 			t.Errorf("Expected %s , got %s", v.expectedValue, err)
 		} else if value != v.expectedValue {
 			t.Errorf("Expected %s , got %s", v.expectedValue, value)
 		}
+	}
+}
+
+func TestGetSSMParameterInvalidChar(t *testing.T) {
+	key := "&%&/root/parameter5!$%&$&"
+	t.Logf("Key with invalid characters should be handled")
+	// Setup Test
+	mockSvc := &mockSSMClient{}
+	_, err := getSSMParameter(mockSvc, key, false, false)
+	if err == nil {
+		t.Error(err)
 	}
 }
 
