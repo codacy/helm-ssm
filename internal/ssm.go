@@ -60,7 +60,7 @@ func getSSMParameter(svc ssmiface.SSMAPI, name string, required bool, decrypt bo
 	if ok && aerr.Code() == ssm.ErrCodeParameterNotFound {
 		// Specific error code handling
 		if !required {
-			return "\"\"", nil
+			return "", nil
 		}
 		return "", err
 	}
