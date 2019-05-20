@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 	"text/template"
@@ -13,29 +14,37 @@ import (
 	"k8s.io/helm/pkg/engine"
 )
 
+// WriteFileD dumps a given content on the file with path `targetDir/fileName`.
+func WriteFileD(fileName string, targetDir string, content string) error {
+	targetFilePath := targetDir + "/" + fileName
+	_ = os.Mkdir(targetDir, os.ModePerm)
+	return WriteFile(targetFilePath, content)
+}
+
+// WriteFile dumps a given content on the file with path `targetFilePath`.
+func WriteFile(targetFilePath string, content string) error {
+	return ioutil.WriteFile(targetFilePath, []byte(content), 0777)
+}
+
 // ExecuteTemplate loads a template file, executes is against a given function map and writes the output
-func ExecuteTemplate(sourceFilePath string, funcMap template.FuncMap, verbose bool, dryRun bool) error {
+func ExecuteTemplate(sourceFilePath string, funcMap template.FuncMap, verbose bool) (string, error) {
 	fileContent, err := ioutil.ReadFile(sourceFilePath)
 	if err != nil {
-		return err
+		return "", err
 	}
 	t := template.New("ssmtpl").Funcs(funcMap)
 	if _, err := t.Parse(string(fileContent)); err != nil {
-		return err
+		return "", err
 	}
 	var buf bytes.Buffer
 	vals := map[string]interface{}{}
 	if err := t.Execute(&buf, vals); err != nil {
-		return err
+		return "", err
 	}
 	if verbose {
 		fmt.Println(string(buf.Bytes()))
 	}
-	if !dryRun {
-		ioutil.WriteFile(sourceFilePath, buf.Bytes(), 0777)
-	}
-
-	return nil
+	return buf.String(), nil
 }
 
 // GetFuncMap builds the relevant function map to helm_ssm

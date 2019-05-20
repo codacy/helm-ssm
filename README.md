@@ -43,6 +43,7 @@ $ helm ssm [flags]
 ```sh
   -d, --dry-run                 doesn't replace the file content
   -h, --help                    help for ssm
+  -t, --target-dir string       dir to output content
   -f, --values valueFilesList   specify values in a YAML file (can specify multiple) (default [])
   -v, --verbose                 show the computed YAML values file/s
 ```

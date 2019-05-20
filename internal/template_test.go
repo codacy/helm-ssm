@@ -26,9 +26,22 @@ func TestExecuteTemplate(t *testing.T) {
 	}
 	defer syscall.Unlink(templateFilePath)
 	ioutil.WriteFile(templateFilePath, []byte(templateContent), 0644)
-	if err := ExecuteTemplate(templateFilePath, template.FuncMap{}, false, false); err != nil {
-		t.Error(err)
+	content, err := ExecuteTemplate(templateFilePath, template.FuncMap{}, false)
+	if content != expectedOutput {
+		t.Errorf("Expected content \"%s\". Got \"%s\"", expectedOutput, content)
 	}
+}
+
+func TestWriteFile(t *testing.T) {
+	templateContent := "write_file_example: true"
+	expectedOutput := "write_file_example: true"
+	t.Logf("Template with content: %s , should out put a file with content: %s", templateContent, expectedOutput)
+
+	templateFilePath, err := createTempFile()
+	if err != nil {
+		panic(err)
+	}
+	WriteFile(templateFilePath, templateContent)
 	fileContent, err := ioutil.ReadFile(templateFilePath)
 	if err != nil {
 		panic(err)
@@ -38,10 +51,10 @@ func TestExecuteTemplate(t *testing.T) {
 		t.Errorf("Expected file with content \"%s\". Got \"%s\"", expectedOutput, content)
 	}
 }
-
 func TestFailExecuteTemplate(t *testing.T) {
 	t.Logf("Non existing template should return \"no such file or directory\" error.")
-	if err := ExecuteTemplate("", template.FuncMap{}, false, false); err == nil {
+	_, err := ExecuteTemplate("", template.FuncMap{}, false)
+	if err == nil {
 		t.Error("Should fail with \"no such file or directory\"")
 	}
 }
