@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	hssm "github.com/codacy/helm-ssm/internal"
@@ -10,6 +11,7 @@ import (
 )
 
 var valueFiles valueFilesList
+var targetDir string
 var verbose bool
 var dryRun bool
 
@@ -41,8 +43,10 @@ func main() {
 	f.VarP(&valueFiles, "values", "f", "specify values in a YAML file (can specify multiple)")
 	f.BoolVarP(&verbose, "verbose", "v", false, "show the computed YAML values file/s")
 	f.BoolVarP(&dryRun, "dry-run", "d", false, "doesn't replace the file content")
+	f.StringVarP(&targetDir, "target-dir", "o", "", "dir to output content")
 
 	cmd.MarkFlagRequired("values")
+
 	if err := cmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -52,9 +56,21 @@ func main() {
 func run(cmd *cobra.Command, args []string) error {
 	funcMap := hssm.GetFuncMap()
 	for _, filePath := range valueFiles {
-		if err := hssm.ExecuteTemplate(filePath, funcMap, verbose, dryRun); err != nil {
+		content, err := hssm.ExecuteTemplate(filePath, funcMap, verbose)
+		if err != nil {
 			return err
+		}
+		if !dryRun {
+			write(filePath, targetDir, content)
 		}
 	}
 	return nil
+}
+
+func write(filePath string, targetDir string, content string) error {
+	if targetDir != "" {
+		fileName := filepath.Base(filePath)
+		return hssm.WriteFileD(fileName, targetDir, content)
+	}
+	return hssm.WriteFile(filePath, content)
 }
