@@ -21,12 +21,12 @@ func NewAWSSession() *session.Session {
 
 // GetSSMParameter gets a parameter from the AWS Simple Systems Manager service.
 func GetSSMParameter(name string, required bool) (string, error) {
-	return GetSSMParameterRD(name, required, false, "")
+	return GetSSMParameterRD(name, required, true, "")
 }
 
 // GetSSMParameterR gets a parameter from the AWS Simple Systems Manager service, on a specific region.
 func GetSSMParameterR(name string, required bool, region string) (string, error) {
-	return GetSSMParameterRD(name, required, false, region)
+	return GetSSMParameterRD(name, required, true, region)
 }
 
 // GetSSMParameterRD gets a parameter from the AWS Simple Systems Manager service.

@@ -29,6 +29,7 @@ ingress:
     - service1.{{ssm "/empty/subdomain" "required=false" }}
     - service2.{{ssm "/exists/subdomain" "required=false" "region=eu-west-1" }}
     - service3.{{ssm "/subdomain" "required=false" "region=eu-west-1" "prefix=/empty" }}
+    - service4.{{ssm "/securestring" }}
 
 ```
 
