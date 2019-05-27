@@ -10,9 +10,9 @@ LDFLAGS := "-X main.version=${VERSION}"
 .PHONY: install
 install: bootstrap dist
 	mkdir -p $(HELM_PLUGIN_DIR)
-	@if [ "$$(uname)" = "Darwin" ]; then file="${HELM_PLUGIN_NAME}-macos-${VERSION}"; \
- 	elif [ "$$(uname)" = "Linux" ]; then file="${HELM_PLUGIN_NAME}-linux-${VERSION}"; \
-	else file="${HELM_PLUGIN_NAME}-windows-${VERSION}"; \
+	@if [ "$$(uname)" = "Darwin" ]; then file="${HELM_PLUGIN_NAME}-macos"; \
+ 	elif [ "$$(uname)" = "Linux" ]; then file="${HELM_PLUGIN_NAME}-linux"; \
+	else file="${HELM_PLUGIN_NAME}-windows"; \
 	fi; \
 	mkdir -p $(DIST)/$$file ; \
 	tar -xf $(DIST)/$$file.tgz -C $(DIST)/$$file ; \
