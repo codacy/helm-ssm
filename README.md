@@ -33,6 +33,19 @@ ingress:
 
 ```
 
+when using `required=false` option you might want to disable the key at all if there is no value associated, an easy way of doing it with go templates is:
+
+```yaml
+service:
+ingress:
+  enabled: false
+  hosts:
+    {{with $subdomain := (ssm "/exists/subdomain" "required=false") }}{{ if $subdomain }}
+    - service.{{$subdomain}}
+    {{ end }}{{ end }}
+
+```
+
 ### Command
 
 ```sh
