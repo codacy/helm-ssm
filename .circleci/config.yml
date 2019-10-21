@@ -70,3 +70,7 @@ workflows:
           context: CodacyAWS
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - master
