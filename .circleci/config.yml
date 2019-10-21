@@ -12,7 +12,12 @@ jobs:
     environment: # environment variables for the build itself
       TEST_RESULTS: /tmp/test-results # path to where test results will be saved
 
+    working_directory: ~/workdir
+
     steps: # steps that comprise the `build` job
+      - attach_workspace:
+          at: ~/
+
       - run: mkdir -p $TEST_RESULTS # create the test results directory
 
       - restore_cache: # restores saved cache if no changes are detected since last run
