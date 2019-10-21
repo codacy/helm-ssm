@@ -8,9 +8,7 @@ jobs:
     docker: # run the steps with Docker
       # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
       - image: circleci/golang:1.12 #
-    # directory where steps are run. Path must conform to the Go Workspace requirements
-    working_directory: /go/src/github.com/codacy/helm-ssm
-
+    
     environment: # environment variables for the build itself
       TEST_RESULTS: /tmp/test-results # path to where test results will be saved
 
