@@ -11,36 +11,28 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 )
 
-// NewAWSSession loads a new session from shared config
-func NewAWSSession() *session.Session {
+// GetSSMParameter gets a parameter from the AWS Simple Systems Manager service.
+func GetSSMParameter(name string, defaultValue string, decrypt bool, region string) (string, error) {
+	svc := getSSMService(region)
+	return getSSMParameter(svc, name, defaultValue, decrypt)
+}
+
+func getSSMService(region string) *ssm.SSM {
+	awsSession := newAWSSession()
+	if region != "" {
+		return ssm.New(awsSession, aws.NewConfig().WithRegion(region))
+	}
+	return ssm.New(awsSession)
+}
+
+func newAWSSession() *session.Session {
 	session := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 	return session
 }
 
-// GetSSMParameter gets a parameter from the AWS Simple Systems Manager service.
-func GetSSMParameter(name string, required bool) (string, error) {
-	return GetSSMParameterRD(name, required, true, "")
-}
-
-// GetSSMParameterR gets a parameter from the AWS Simple Systems Manager service, on a specific region.
-func GetSSMParameterR(name string, required bool, region string) (string, error) {
-	return GetSSMParameterRD(name, required, true, region)
-}
-
-// GetSSMParameterRD gets a parameter from the AWS Simple Systems Manager service.
-func GetSSMParameterRD(name string, required bool, decrypt bool, region string) (string, error) {
-	awsSession := NewAWSSession()
-	if region != "" {
-		svc := ssm.New(awsSession, aws.NewConfig().WithRegion(region))
-		return getSSMParameter(svc, name, required, decrypt)
-	}
-	svc := ssm.New(awsSession)
-	return getSSMParameter(svc, name, required, decrypt)
-}
-
-func getSSMParameter(svc ssmiface.SSMAPI, name string, required bool, decrypt bool) (string, error) {
+func getSSMParameter(svc ssmiface.SSMAPI, name string, defaultValue string, decrypt bool) (string, error) {
 	regex := "([a-zA-Z0-9\\.\\-_/]*)"
 	r, _ := regexp.Compile(regex)
 	match := r.FindString(name)
@@ -59,8 +51,8 @@ func getSSMParameter(svc ssmiface.SSMAPI, name string, required bool, decrypt bo
 	aerr, ok := err.(awserr.Error)
 	if ok && aerr.Code() == ssm.ErrCodeParameterNotFound {
 		// Specific error code handling
-		if !required {
-			return "", nil
+		if defaultValue != "" {
+			return defaultValue, nil
 		}
 		return "", err
 	}

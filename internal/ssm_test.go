@@ -10,17 +10,17 @@ import (
 
 type GetSSMParameterTestValue struct {
 	path          string
-	required      bool
+	defaultValue  string
 	decrypt       bool
 	expectedValue string
 }
 
 var ssmTestValues = map[string]GetSSMParameterTestValue{
-	"/root/parameter1": GetSSMParameterTestValue{"/root/parameter1", false, false, "value1"},
-	"/root/parameter2": GetSSMParameterTestValue{"/root/parameter2", false, false, "value2"},
-	"/root/parameter3": GetSSMParameterTestValue{"/root/parameter3", false, false, "value3"},
-	"/root/parameter4": GetSSMParameterTestValue{"/root/parameter4", false, false, "value4"},
-	"/root/parameter5": GetSSMParameterTestValue{"/root/parameter5", false, false, "value5"},
+	"/root/parameter1": GetSSMParameterTestValue{"/root/parameter1", "value", false, "value1"},
+	"/root/parameter2": GetSSMParameterTestValue{"/root/parameter2", "value", false, "value2"},
+	"/root/parameter3": GetSSMParameterTestValue{"/root/parameter3", "value", false, "value3"},
+	"/root/parameter4": GetSSMParameterTestValue{"/root/parameter4", "value", false, "value4"},
+	"/root/parameter5": GetSSMParameterTestValue{"/root/parameter5", "value", false, "value5"},
 }
 
 type mockSSMClient struct {
@@ -33,7 +33,7 @@ func TestGetSSMParameter(t *testing.T) {
 
 	for k, v := range ssmTestValues {
 		t.Logf("Key: %s should have value: %s", k, v.expectedValue)
-		value, err := getSSMParameter(mockSvc, v.path, v.required, v.decrypt)
+		value, err := getSSMParameter(mockSvc, v.path, v.defaultValue, v.decrypt)
 		if err != nil {
 			t.Errorf("Expected %s , got %s", v.expectedValue, err)
 		} else if value != v.expectedValue {
@@ -47,7 +47,7 @@ func TestGetSSMParameterInvalidChar(t *testing.T) {
 	t.Logf("Key with invalid characters should be handled")
 	// Setup Test
 	mockSvc := &mockSSMClient{}
-	_, err := getSSMParameter(mockSvc, key, false, false)
+	_, err := getSSMParameter(mockSvc, key, "value", false)
 	if err == nil {
 		t.Error(err)
 	}

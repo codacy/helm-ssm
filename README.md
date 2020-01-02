@@ -15,7 +15,7 @@ file, where you want it to be replaced by the plugin.
 Currently the plugin supports the following options:
 
 - `region=eu-west-1` - to resolve that parameter in a specific region
-- `required=false` - to mark the parameter as non required. The plugin will replace the placeholder by  `""`.
+- `default=some-value` - to give a default value when the ssm parameter is optional. The plugin will throw an error when values are not defined and do not have a default.
 - `prefix=/something` - you can use this to specify a given prefix for a parameter without affecting the path. It will be concatenated with the path before resolving.
 
 ### Values file
@@ -26,21 +26,21 @@ ingress:
   enabled: false
   hosts:
     - service.{{ssm "/exists/subdomain" }}
-    - service1.{{ssm "/empty/subdomain" "required=false" }}
-    - service2.{{ssm "/exists/subdomain" "required=false" "region=eu-west-1" }}
-    - service3.{{ssm "/subdomain" "required=false" "region=eu-west-1" "prefix=/empty" }}
+    - service1.{{ssm "/empty/subdomain" "default=false" }}
+    - service2.{{ssm "/exists/subdomain" "default=false" "region=eu-west-1" }}
+    - service3.{{ssm "/subdomain" "default=false" "region=eu-west-1" "prefix=/empty" }}
     - service4.{{ssm "/securestring" }}
 
 ```
 
-when using `required=false` option you might want to disable the key at all if there is no value associated, an easy way of doing it with go templates is:
+when you do not want a key to be defined, use a with in the go templates:
 
 ```yaml
 service:
 ingress:
   enabled: false
   hosts:
-    {{with $subdomain := (ssm "/exists/subdomain" "required=false") }}{{ if $subdomain }}
+    {{with $subdomain := (ssm "/exists/subdomain" "default=") }}{{ if $subdomain }}
     - service.{{$subdomain}}
     {{ end }}{{ end }}
 
@@ -55,7 +55,7 @@ $ helm ssm [flags]
 ### Flags
 
 ```sh
-  -d, --dry-run                 doesn't replace the file content
+  -d, --dry-run                 does not replace the file content
   -h, --help                    help for ssm
   -t, --target-dir string       dir to output content
   -f, --values valueFilesList   specify values in a YAML file (can specify multiple) (default [])

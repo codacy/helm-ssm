@@ -5,11 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"strings"
 	"text/template"
-
-	"github.com/aws/aws-sdk-go/aws/session"
 
 	"k8s.io/helm/pkg/engine"
 )
@@ -57,13 +54,12 @@ func GetFuncMap() template.FuncMap {
 		funcMap[k] = v
 	}
 	funcMap["ssm"] = func(ssmPath string, options ...string) (string, error) {
-		var awsSession = NewAWSSession()
-		return resolveSSMParameter(awsSession, ssmPath, options)
+		return resolveSSMParameter(ssmPath, options)
 	}
 	return funcMap
 }
 
-func resolveSSMParameter(awsSession *session.Session, ssmPath string, options []string) (string, error) {
+func resolveSSMParameter(ssmPath string, options []string) (string, error) {
 	var res string
 	var ssmErr error
 
@@ -71,12 +67,11 @@ func resolveSSMParameter(awsSession *session.Session, ssmPath string, options []
 	if err != nil {
 		return res, err
 	}
-	required, _ := strconv.ParseBool(opts["required"])
-	if region, exists := opts["region"]; exists {
-		res, ssmErr = GetSSMParameterR(opts["prefix"]+ssmPath, required, region)
 
+	if region, exists := opts["region"]; exists {
+		res, ssmErr = GetSSMParameter(opts["prefix"]+ssmPath, opts["default"], true, region)
 	} else {
-		res, ssmErr = GetSSMParameter(opts["prefix"]+ssmPath, required)
+		res, ssmErr = GetSSMParameter(opts["prefix"]+ssmPath, opts["default"], true, "")
 	}
 	return res, ssmErr
 }
