@@ -8,6 +8,11 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
+
 	"k8s.io/helm/pkg/engine"
 )
 
@@ -53,29 +58,33 @@ func GetFuncMap() template.FuncMap {
 	for k, v := range e.FuncMap {
 		funcMap[k] = v
 	}
+
+	awsSession := newAWSSession()
 	funcMap["ssm"] = func(ssmPath string, options ...string) (*string, error) {
-		return resolveSSMParameter(ssmPath, options)
+		return resolveSSMParameter(awsSession, ssmPath, options)
 	}
 	return funcMap
 }
 
-func resolveSSMParameter(ssmPath string, options []string) (*string, error) {
+func resolveSSMParameter(session *session.Session, ssmPath string, options []string) (*string, error) {
 	opts, err := handleOptions(options)
 	if err != nil {
 		return nil, err
 	}
 
-	var defaultValue *string = nil
+	var defaultValue *string
 	if optDefaultValue, exists := opts["default"]; exists {
 		defaultValue = &optDefaultValue
 	}
 
-	var region string = ""
-	if optRegion, exists := opts["region"]; exists {
-		region = optRegion
+	var svc ssmiface.SSMAPI
+	if region, exists := opts["region"]; exists {
+		svc = ssm.New(session, aws.NewConfig().WithRegion(region))
+	} else {
+		svc = ssm.New(session)
 	}
 
-	return GetSSMParameter(opts["prefix"]+ssmPath, defaultValue, true, region)
+	return GetSSMParameter(svc, opts["prefix"]+ssmPath, defaultValue, true)
 }
 
 func handleOptions(options []string) (map[string]string, error) {
@@ -99,4 +108,11 @@ func handleOptions(options []string) (map[string]string, error) {
 		opts["prefix"] = ""
 	}
 	return opts, nil
+}
+
+func newAWSSession() *session.Session {
+	session := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+	return session
 }
