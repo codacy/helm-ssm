@@ -4,23 +4,26 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 )
 
-type GetSSMParameterTestValue struct {
-	path          string
-	defaultValue  string
-	decrypt       bool
-	expectedValue string
+var fakeValue string = "value"
+var fakeOtherValue string = "other-value"
+var fakeMissingValue string = "missing-value"
+
+type SSMParameter struct {
+	value         *string
+	defaultValue  *string
+	expectedValue *string
 }
 
-var ssmTestValues = map[string]GetSSMParameterTestValue{
-	"/root/parameter1": GetSSMParameterTestValue{"/root/parameter1", "value", false, "value1"},
-	"/root/parameter2": GetSSMParameterTestValue{"/root/parameter2", "value", false, "value2"},
-	"/root/parameter3": GetSSMParameterTestValue{"/root/parameter3", "value", false, "value3"},
-	"/root/parameter4": GetSSMParameterTestValue{"/root/parameter4", "value", false, "value4"},
-	"/root/parameter5": GetSSMParameterTestValue{"/root/parameter5", "value", false, "value5"},
+var fakeSSMStore = map[string]SSMParameter{
+	"/root/existing-parameter":                     SSMParameter{&fakeValue, nil, &fakeValue},
+	"/root/existing-parameter-with-default":        SSMParameter{&fakeValue, &fakeOtherValue, &fakeValue},
+	"/root/non-existing-parameter":                 SSMParameter{nil, &fakeMissingValue, &fakeMissingValue},
+	"/root/non-existing-parameter-without-default": SSMParameter{nil, nil, nil},
 }
 
 type mockSSMClient struct {
@@ -31,13 +34,27 @@ func TestGetSSMParameter(t *testing.T) {
 	// Setup Test
 	mockSvc := &mockSSMClient{}
 
-	for k, v := range ssmTestValues {
-		t.Logf("Key: %s should have value: %s", k, v.expectedValue)
-		value, err := getSSMParameter(mockSvc, v.path, v.defaultValue, v.decrypt)
-		if err != nil {
-			t.Errorf("Expected %s , got %s", v.expectedValue, err)
-		} else if value != v.expectedValue {
-			t.Errorf("Expected %s , got %s", v.expectedValue, value)
+	for k, v := range fakeSSMStore {
+		expectedValueStr := "nil"
+		if v.expectedValue != nil {
+			expectedValueStr = *v.expectedValue
+		}
+		t.Logf("Key: %s should have value: %s", k, expectedValueStr)
+
+		value, err := getSSMParameter(mockSvc, k, v.defaultValue, false)
+
+		if v.expectedValue != nil && value != nil && *value == *v.expectedValue {
+			// Success when expectedValue and value are both defined
+			// and their values are equal
+		} else if v.expectedValue == nil && v.value == nil && err != nil {
+			// Success when expectedValue and value are both nil
+			// getSSMParameter should return an error
+		} else if err != nil {
+			t.Errorf("Expected %s , got %s", *v.expectedValue, err)
+		} else if value != nil {
+			t.Errorf("Expected %s , got %s", *v.expectedValue, *value)
+		} else {
+			t.Errorf("Expected %s , got nil", *v.expectedValue)
 		}
 	}
 }
@@ -47,7 +64,7 @@ func TestGetSSMParameterInvalidChar(t *testing.T) {
 	t.Logf("Key with invalid characters should be handled")
 	// Setup Test
 	mockSvc := &mockSSMClient{}
-	_, err := getSSMParameter(mockSvc, key, "value", false)
+	_, err := getSSMParameter(mockSvc, key, nil, false)
 	if err == nil {
 		t.Error(err)
 	}
@@ -58,19 +75,24 @@ func (m *mockSSMClient) GetParameter(input *ssm.GetParameterInput) (*ssm.GetPara
 	parameterArn := "arn:::::"
 	parameterLastModifiedDate := time.Now()
 	parameterType := "String"
-	parameterValue := ssmTestValues[*input.Name]
+	parameterValue := fakeSSMStore[*input.Name]
 	var parameterVersion int64 = 1
+
+	if parameterValue.value == nil {
+		return nil, awserr.New("ParameterNotFound", "", nil)
+	}
 
 	parameter := ssm.Parameter{
 		ARN:              &parameterArn,
 		LastModifiedDate: &parameterLastModifiedDate,
 		Name:             input.Name,
 		Type:             &parameterType,
-		Value:            &parameterValue.expectedValue,
+		Value:            parameterValue.value,
 		Version:          &parameterVersion,
 	}
 	getParameterOutput := &ssm.GetParameterOutput{
 		Parameter: &parameter,
 	}
+
 	return getParameterOutput, nil
 }

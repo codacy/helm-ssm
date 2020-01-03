@@ -53,27 +53,29 @@ func GetFuncMap() template.FuncMap {
 	for k, v := range e.FuncMap {
 		funcMap[k] = v
 	}
-	funcMap["ssm"] = func(ssmPath string, options ...string) (string, error) {
+	funcMap["ssm"] = func(ssmPath string, options ...string) (*string, error) {
 		return resolveSSMParameter(ssmPath, options)
 	}
 	return funcMap
 }
 
-func resolveSSMParameter(ssmPath string, options []string) (string, error) {
-	var res string
-	var ssmErr error
-
+func resolveSSMParameter(ssmPath string, options []string) (*string, error) {
 	opts, err := handleOptions(options)
 	if err != nil {
-		return res, err
+		return nil, err
 	}
 
-	if region, exists := opts["region"]; exists {
-		res, ssmErr = GetSSMParameter(opts["prefix"]+ssmPath, opts["default"], true, region)
-	} else {
-		res, ssmErr = GetSSMParameter(opts["prefix"]+ssmPath, opts["default"], true, "")
+	var defaultValue *string = nil
+	if optDefaultValue, exists := opts["default"]; exists {
+		defaultValue = &optDefaultValue
 	}
-	return res, ssmErr
+
+	var region string = ""
+	if optRegion, exists := opts["region"]; exists {
+		region = optRegion
+	}
+
+	return GetSSMParameter(opts["prefix"]+ssmPath, defaultValue, true, region)
 }
 
 func handleOptions(options []string) (map[string]string, error) {

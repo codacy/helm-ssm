@@ -26,9 +26,9 @@ ingress:
   enabled: false
   hosts:
     - service.{{ssm "/exists/subdomain" }}
-    - service1.{{ssm "/empty/subdomain" "default=false" }}
-    - service2.{{ssm "/exists/subdomain" "default=false" "region=eu-west-1" }}
-    - service3.{{ssm "/subdomain" "default=false" "region=eu-west-1" "prefix=/empty" }}
+    - service1.{{ssm "/empty/subdomain" "default=codacy.org" }}
+    - service2.{{ssm "/exists/subdomain" "default=codacy.org" "region=eu-west-1" }}
+    - service3.{{ssm "/subdomain" "default=codacy.org" "region=eu-west-1" "prefix=/empty" }}
     - service4.{{ssm "/securestring" }}
 
 ```
