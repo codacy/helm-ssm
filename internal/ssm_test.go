@@ -11,9 +11,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 )
 
-var fakeValue string = "value"
-var fakeOtherValue string = "other-value"
-var fakeMissingValue string = "missing-value"
+var fakeValue = "value"
+var fakeOtherValue = "other-value"
+var fakeMissingValue = "missing-value"
 
 type SSMParameter struct {
 	value         *string

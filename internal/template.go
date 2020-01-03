@@ -60,8 +60,13 @@ func GetFuncMap() template.FuncMap {
 	}
 
 	awsSession := newAWSSession()
-	funcMap["ssm"] = func(ssmPath string, options ...string) (*string, error) {
-		return resolveSSMParameter(awsSession, ssmPath, options)
+	funcMap["ssm"] = func(ssmPath string, options ...string) (string, error) {
+		optStr, err := resolveSSMParameter(awsSession, ssmPath, options)
+		str := ""
+		if optStr != nil {
+			str = *optStr
+		}
+		return str, err
 	}
 	return funcMap
 }
