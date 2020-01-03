@@ -15,7 +15,7 @@ file, where you want it to be replaced by the plugin.
 Currently the plugin supports the following options:
 
 - `region=eu-west-1` - to resolve that parameter in a specific region
-- `default=some-value` - to give a default value when the ssm parameter is optional. The plugin will throw an error when values are not defined and do not have a default.
+- `default=some-value` - to give a default **string** value when the ssm parameter is optional. The plugin will throw an error when values are not defined and do not have a default.
 - `prefix=/something` - you can use this to specify a given prefix for a parameter without affecting the path. It will be concatenated with the path before resolving.
 
 ### Values file
@@ -33,7 +33,7 @@ ingress:
 
 ```
 
-when you do not want a key to be defined, use a with in the go templates:
+when you do not want a key to be defined, use a with using a default empty value in the go templates:
 
 ```yaml
 service:
