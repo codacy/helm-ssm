@@ -4,6 +4,8 @@ import (
 	"testing"
 	"time"
 
+	"gotest.tools/assert"
+
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
@@ -41,20 +43,11 @@ func TestGetSSMParameter(t *testing.T) {
 		}
 		t.Logf("Key: %s should have value: %s", k, expectedValueStr)
 
-		value, err := getSSMParameter(mockSvc, k, v.defaultValue, false)
+		value, err := GetSSMParameter(mockSvc, k, v.defaultValue, false)
 
-		if v.expectedValue != nil && value != nil && *value == *v.expectedValue {
-			// Success when expectedValue and value are both defined
-			// and their values are equal
-		} else if v.expectedValue == nil && v.value == nil && err != nil {
-			// Success when expectedValue and value are both nil
-			// getSSMParameter should return an error
-		} else if err != nil {
-			t.Errorf("Expected %s , got %s", *v.expectedValue, err)
-		} else if value != nil {
-			t.Errorf("Expected %s , got %s", *v.expectedValue, *value)
-		} else {
-			t.Errorf("Expected %s , got nil", *v.expectedValue)
+		assert.Equal(t, v.expectedValue, value)
+		if v.expectedValue == nil {
+			assert.Error(t, err, "ParameterNotFound: Parameter does not exist in SSM")
 		}
 	}
 }
@@ -64,10 +57,8 @@ func TestGetSSMParameterInvalidChar(t *testing.T) {
 	t.Logf("Key with invalid characters should be handled")
 	// Setup Test
 	mockSvc := &mockSSMClient{}
-	_, err := getSSMParameter(mockSvc, key, nil, false)
-	if err == nil {
-		t.Error(err)
-	}
+	_, err := GetSSMParameter(mockSvc, key, nil, false)
+	assert.Error(t, err, "There is an invalid character in the name of the parameter: &%&/root/parameter5!$%&$&. It should match ([a-zA-Z0-9\\.\\-_/]*)")
 }
 
 // GetParameter is a mock for the SSM client
@@ -79,7 +70,7 @@ func (m *mockSSMClient) GetParameter(input *ssm.GetParameterInput) (*ssm.GetPara
 	var parameterVersion int64 = 1
 
 	if parameterValue.value == nil {
-		return nil, awserr.New("ParameterNotFound", "", nil)
+		return nil, awserr.New("ParameterNotFound", "Parameter does not exist in SSM", nil)
 	}
 
 	parameter := ssm.Parameter{
