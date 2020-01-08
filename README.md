@@ -1,6 +1,7 @@
 # Helm SSM Plugin
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d3cd080edd8644e085f2f8adfd43510c)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=codacy/helm-ssm&amp;utm_campaign=Badge_Grade)
+[![CircleCI](https://circleci.com/gh/codacy/helm-ssm.svg?style=svg)](https://circleci.com/gh/codacy/helm-ssm)
 
 This is a plugin to help developers inject values coming from AWS SSM
 parameters, on the `values.yaml` file.
