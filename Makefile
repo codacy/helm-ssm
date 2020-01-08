@@ -3,7 +3,7 @@ HELM_PLUGIN_DIR ?= $(HELM_HOME)/plugins/helm-ssm
 HELM_PLUGIN_NAME := helm-ssm
 HAS_DEP := $(shell which dep)
 DEP_VERSION := v0.5.1
-VERSION := $(shell sed -n -e 's/version:[ "]*\([^"]*\).*/\1/p' plugin.yaml)
+VERSION := $(shell cat .version)
 DIST := $(CURDIR)/_dist
 LDFLAGS := "-X main.version=${VERSION}"
 
@@ -33,6 +33,7 @@ test: bootstrap
 .PHONY: dist
 dist:
 	mkdir -p $(DIST)
+	sed -i 's/version:.*/version: "'$(VERSION)'"/g' plugin.yaml
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${HELM_PLUGIN_NAME} -ldflags $(LDFLAGS) ./cmd
 	tar -zcvf $(DIST)/${HELM_PLUGIN_NAME}-linux.tgz ${HELM_PLUGIN_NAME} README.md LICENSE plugin.yaml
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ${HELM_PLUGIN_NAME} -ldflags $(LDFLAGS) ./cmd

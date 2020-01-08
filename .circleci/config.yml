@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@1.0.0
+  codacy: codacy/base@dev:1.3.0-addworkdircustomizationinversion.cf8a970
 
 jobs:
   build: # runs not using Workflows must have a `build` job as entry point
@@ -16,7 +16,9 @@ jobs:
       TEST_RESULTS: /tmp/test-results # path to where test results will be saved
 
     steps: # steps that comprise the `build` job
-      - checkout
+      - attach_workspace:
+          at: /go/src/github.com/codacy/helm-ssm
+
       - run: mkdir -p $TEST_RESULTS # create the test results directory
 
       - restore_cache: # restores saved cache if no changes are detected since last run
@@ -34,15 +36,10 @@ jobs:
 
       - run: make dist # pull and build dependencies for the project
 
-      - run:
-          name: "Publish Release on GitHub"
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              go get github.com/tcnksm/ghr
-              VERSION=$(sed -n -e 's/version:[ "]*\([^"]*\).*/\1/p' plugin.yaml)
-              ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace ${VERSION} ./_dist/
-              ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace latest ./_dist/
-            fi
+      - persist_to_workspace:
+          root: /go/src/github.com/codacy/helm-ssm
+          paths: 
+            - '*'
 
       - save_cache: # Store cache in the /go/pkg directory
           key: v1-pkg-cache
@@ -56,13 +53,30 @@ jobs:
       - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
           path: /tmp/test-results
 
+  publish: # runs not using Workflows must have a `build` job as entry point
+    docker: # run the steps with Docker
+      # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+      - image: circleci/golang:1.12 #
+    # directory where steps are run. Path must conform to the Go Workspace requirements
+    working_directory: /go/src/github.com/codacy/helm-ssm
+    steps: # steps that comprise the `build` job
+      - attach_workspace:
+          at: /go/src/github.com/codacy/helm-ssm
+
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION="$(cat .version)"
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} ./_dist/
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} latest ./_dist/
+
 workflows:
   version: 2
-  my-workflow:
+  ci:
     jobs:
       - codacy/checkout_and_version
       - build:
-          context: CodacyGitHub
           requires:
             - codacy/checkout_and_version
       - codacy/tag_version:
@@ -74,3 +88,8 @@ workflows:
             branches:
               only:
                 - master
+                - fix-build
+      - publish:
+          context: CodacyGitHub
+          requires:
+            - tag_version
