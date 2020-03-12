@@ -41,9 +41,9 @@ service:
 ingress:
   enabled: false
   hosts:
-    {{with $subdomain := (ssm "/exists/subdomain" "default=") }}{{ if $subdomain }}
+    {{- with $subdomain := (ssm "/exists/subdomain" "default=") }}{{ if $subdomain }}
     - service.{{$subdomain}}
-    {{ end }}{{ end }}
+    {{- end }}{{- end }}
 
 ```
 
