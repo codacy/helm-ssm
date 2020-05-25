@@ -50,7 +50,7 @@ func ExecuteTemplate(sourceFilePath string, funcMap template.FuncMap, verbose bo
 }
 
 // GetFuncMap builds the relevant function map to helm_ssm
-func GetFuncMap() template.FuncMap {
+func GetFuncMap(profile string) template.FuncMap {
 	e := engine.New()
 
 	// Clone the func map because we are adding context-specific functions.
@@ -59,7 +59,7 @@ func GetFuncMap() template.FuncMap {
 		funcMap[k] = v
 	}
 
-	awsSession := newAWSSession()
+	awsSession := newAWSSession(profile)
 	funcMap["ssm"] = func(ssmPath string, options ...string) (string, error) {
 		optStr, err := resolveSSMParameter(awsSession, ssmPath, options)
 		str := ""
@@ -115,9 +115,11 @@ func handleOptions(options []string) (map[string]string, error) {
 	return opts, nil
 }
 
-func newAWSSession() *session.Session {
+func newAWSSession(profile string) *session.Session {
+	// Specify profile for config and region for requests
 	session := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
+		Profile:           profile,
 	}))
 	return session
 }

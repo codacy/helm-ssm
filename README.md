@@ -58,6 +58,7 @@ $ helm ssm [flags]
 ```sh
   -d, --dry-run                 does not replace the file content
   -h, --help                    help for ssm
+  -p, --profile string          aws profile to fetch the ssm parameters
   -t, --target-dir string       dir to output content
   -f, --values valueFilesList   specify values in a YAML file (can specify multiple) (default [])
   -v, --verbose                 show the computed YAML values file/s

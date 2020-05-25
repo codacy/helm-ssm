@@ -61,7 +61,7 @@ func TestFailExecuteTemplate(t *testing.T) {
 
 func TestGetFuncMap(t *testing.T) {
 	t.Logf("\"ssm\" function should exist in function map.")
-	funcMap := GetFuncMap()
+	funcMap := GetFuncMap("")
 	keys := make([]string, len(funcMap))
 	for k := range funcMap {
 		keys = append(keys, k)
