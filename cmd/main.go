@@ -12,6 +12,7 @@ import (
 
 var valueFiles valueFilesList
 var targetDir string
+var profile string
 var verbose bool
 var dryRun bool
 
@@ -44,6 +45,7 @@ func main() {
 	f.BoolVarP(&verbose, "verbose", "v", false, "show the computed YAML values file/s")
 	f.BoolVarP(&dryRun, "dry-run", "d", false, "doesn't replace the file content")
 	f.StringVarP(&targetDir, "target-dir", "o", "", "dir to output content")
+	f.StringVarP(&profile, "profile", "p", "", "aws profile to fetch the ssm parameters")
 
 	cmd.MarkFlagRequired("values")
 
@@ -54,7 +56,7 @@ func main() {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	funcMap := hssm.GetFuncMap()
+	funcMap := hssm.GetFuncMap(profile)
 	for _, filePath := range valueFiles {
 		content, err := hssm.ExecuteTemplate(filePath, funcMap, verbose)
 		if err != nil {
