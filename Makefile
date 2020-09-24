@@ -18,14 +18,14 @@ install: dist
 	rm -rf $(DIST)/$$file
 
 .PHONY: hookInstall
-hookInstall: bootstrap build
+hookInstall: build
 
 .PHONY: build
 build:
 	go build -o bin/${HELM_PLUGIN_NAME} -ldflags $(LDFLAGS) ./cmd
 
 .PHONY: test
-test: bootstrap
+test:
 	go test -v ./internal
 
 .PHONY: dist
