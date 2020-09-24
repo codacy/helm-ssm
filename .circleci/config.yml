@@ -7,24 +7,24 @@ jobs:
   build: # runs not using Workflows must have a `build` job as entry point
     docker: # run the steps with Docker
       # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
-      - image: circleci/golang:1.12 #
+      - image: circleci/golang:1.15 #
     
     # directory where steps are run. Path must conform to the Go Workspace requirements
-    working_directory: /go/src/github.com/codacy/helm-ssm
+    working_directory: ~/workdir/helm-ssm
     
     environment: # environment variables for the build itself
       TEST_RESULTS: /tmp/test-results # path to where test results will be saved
 
     steps: # steps that comprise the `build` job
       - attach_workspace:
-          at: /go/src/github.com/codacy/helm-ssm
+          at: ~/workdir/helm-ssm
 
       - run: mkdir -p $TEST_RESULTS # create the test results directory
 
       - restore_cache: # restores saved cache if no changes are detected since last run
       # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
           keys:
-            - v1-pkg-cache
+            - v2020-09-pkg-cache
 
       - run: go get github.com/jstemmer/go-junit-report
 
@@ -37,7 +37,7 @@ jobs:
       - run: make dist # pull and build dependencies for the project
 
       - persist_to_workspace:
-          root: /go/src/github.com/codacy/helm-ssm
+          root: ~/workdir/helm-ssm
           paths: 
             - '*'
 
@@ -58,10 +58,10 @@ jobs:
       # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
       - image: circleci/golang:1.12 #
     # directory where steps are run. Path must conform to the Go Workspace requirements
-    working_directory: /go/src/github.com/codacy/helm-ssm
+    working_directory: ~/workdir
     steps: # steps that comprise the `build` job
       - attach_workspace:
-          at: /go/src/github.com/codacy/helm-ssm
+          at: ~/workdir/helm-ssm
 
       - run:
           name: "Publish Release on GitHub"

@@ -5,7 +5,7 @@ description: |-
   Inject AWS SSM parameters into Helm values files
 ignoreFlags: false
 useTunnel: false
-command: "$HELM_PLUGINS/helm-ssm/helm-ssm"
+command: "$HELM_PLUGIN_DIR/helm-ssm"
 hooks:
-  install: chmod +x $HELM_PLUGINS/helm-ssm/helm-ssm
-  update: chmod +x $HELM_PLUGINS/helm-ssm/helm-ssm
+  install: chmod +x $HELM_PLUGIN_DIR/helm-ssm
+  update: chmod +x $HELM_PLUGIN_DIR/helm-ssm
