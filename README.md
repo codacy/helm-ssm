@@ -71,7 +71,7 @@ $ helm ssm [flags]
 ## Install
 
 Choose the latest version from the releases and install the
-appropriate version for your OS:
+appropriate version for your OS as indicated below.
 
 ### Linux
 
@@ -94,19 +94,22 @@ $ helm plugin install https://github.com/codacy/helm-ssm/releases/download/lates
 ### Developer (From Source) Install
 
 If you would like to handle the build yourself, instead of fetching a binary,
-this is how recommend doing it.
+this is how we recommend doing it.
 
-First, set up your environment:
+- Make sure you have [Go](http://golang.org) installed.
 
-- You need to have [Go](http://golang.org) installed. Make sure to set `$GOPATH`
+- Clone this project
 
-Clone this repo into your `$GOPATH`. You can use `go get -d github.com/codacy/helm-ssm`
-for that.
-
+- In the project directory run
 ```sh
-$ cd $GOPATH/src/github.com/codacy/helm-ssm
 $ make install
 ```
+
+### Notice about using this plugin with Helm 2
+
+Since helm2 is deprecated the current version of the plugin only supports helm3. The last version
+to support helm2 is [v2.2.1](https://github.com/codacy/helm-ssm/releases/tag/2.2.1). There will be
+no further patches or updates to this legacy version.
 
 ## What is Codacy
 
