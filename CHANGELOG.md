@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.x
+
+Helm 2 support is dropped and dependencies on its api were removed. This means helm extensions to go templates
+are not supported by this plugin, since the helm engine funcMap is now private.
+
 ## 2.0.x
 
 **NOTE:** Some initial versions of the 2.0.x cycle were wrongly published and for that reason they should start on 2.0.2,
