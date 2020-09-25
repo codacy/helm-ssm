@@ -1,14 +1,12 @@
-HELM_HOME ?= $(shell helm home)
-HELM_PLUGIN_DIR ?= $(HELM_HOME)/plugins/helm-ssm
+HELM_PLUGIN_DIR ?= $(shell helm env | grep HELM_PLUGINS | cut -d\" -f2)/helm-ssm
 HELM_PLUGIN_NAME := helm-ssm
-HAS_DEP := $(shell which dep)
-DEP_VERSION := v0.5.1
 VERSION := $(shell cat .version)
 DIST := $(CURDIR)/_dist
 LDFLAGS := "-X main.version=${VERSION}"
 
 .PHONY: install
-install: bootstrap dist
+install: dist
+	@if [ ! -f .version ] ; then echo "dev" > .version ; fi
 	mkdir -p $(HELM_PLUGIN_DIR)
 	@if [ "$$(uname)" = "Darwin" ]; then file="${HELM_PLUGIN_NAME}-macos"; \
  	elif [ "$$(uname)" = "Linux" ]; then file="${HELM_PLUGIN_NAME}-linux"; \
@@ -20,14 +18,14 @@ install: bootstrap dist
 	rm -rf $(DIST)/$$file
 
 .PHONY: hookInstall
-hookInstall: bootstrap build
+hookInstall: build
 
 .PHONY: build
 build:
 	go build -o bin/${HELM_PLUGIN_NAME} -ldflags $(LDFLAGS) ./cmd
 
 .PHONY: test
-test: bootstrap
+test:
 	go test -v ./internal
 
 .PHONY: dist
@@ -42,11 +40,3 @@ dist:
 	tar -zcvf $(DIST)/${HELM_PLUGIN_NAME}-windows.tgz ${HELM_PLUGIN_NAME}.exe README.md LICENSE plugin.yaml
 	rm ${HELM_PLUGIN_NAME}
 	rm ${HELM_PLUGIN_NAME}.exe
-
-.PHONY: bootstrap
-bootstrap:
-ifndef HAS_DEP
-	DEP_RELEASE_TAG=$(DEP_VERSION) curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-	chmod +x $(GOPATH)/bin/dep
-endif
-	dep ensure

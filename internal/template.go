@@ -12,8 +12,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
-
-	"k8s.io/helm/pkg/engine"
 )
 
 // WriteFileD dumps a given content on the file with path `targetDir/fileName`.
@@ -51,13 +49,8 @@ func ExecuteTemplate(sourceFilePath string, funcMap template.FuncMap, verbose bo
 
 // GetFuncMap builds the relevant function map to helm_ssm
 func GetFuncMap(profile string) template.FuncMap {
-	e := engine.New()
-
 	// Clone the func map because we are adding context-specific functions.
 	var funcMap template.FuncMap = map[string]interface{}{}
-	for k, v := range e.FuncMap {
-		funcMap[k] = v
-	}
 
 	awsSession := newAWSSession(profile)
 	funcMap["ssm"] = func(ssmPath string, options ...string) (string, error) {
@@ -68,6 +61,11 @@ func GetFuncMap(profile string) template.FuncMap {
 		}
 		return str, err
 	}
+
+	funcMap["quote"] = func(input string) string {
+		return "\"" + input + "\""
+	}
+
 	return funcMap
 }
 

@@ -3,8 +3,12 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d3cd080edd8644e085f2f8adfd43510c)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=codacy/helm-ssm&amp;utm_campaign=Badge_Grade)
 [![CircleCI](https://circleci.com/gh/codacy/helm-ssm.svg?style=svg)](https://circleci.com/gh/codacy/helm-ssm)
 
-This is a plugin to help developers inject values coming from AWS SSM
+This is a **helm3** plugin to help developers inject values coming from AWS SSM
 parameters, on the `values.yaml` file.
+
+Since **helm2 is deprecated** the current version of the plugin only supports helm3. The last version
+to support helm2 is [v2.2.1](https://github.com/codacy/helm-ssm/releases/tag/2.2.1). There will be
+no further patches or updates to this legacy version.
 
 ## Usage
 
@@ -59,7 +63,7 @@ $ helm ssm [flags]
   -d, --dry-run                 does not replace the file content
   -h, --help                    help for ssm
   -p, --profile string          aws profile to fetch the ssm parameters
-  -t, --target-dir string       dir to output content
+  -o, --target-dir string       dir to output content
   -f, --values valueFilesList   specify values in a YAML file (can specify multiple) (default [])
   -v, --verbose                 show the computed YAML values file/s
 ```
@@ -71,7 +75,7 @@ $ helm ssm [flags]
 ## Install
 
 Choose the latest version from the releases and install the
-appropriate version for your OS:
+appropriate version for your OS as indicated below.
 
 ### Linux
 
@@ -94,17 +98,14 @@ $ helm plugin install https://github.com/codacy/helm-ssm/releases/download/lates
 ### Developer (From Source) Install
 
 If you would like to handle the build yourself, instead of fetching a binary,
-this is how recommend doing it.
+this is how we recommend doing it.
 
-First, set up your environment:
+- Make sure you have [Go](http://golang.org) installed.
 
-- You need to have [Go](http://golang.org) installed. Make sure to set `$GOPATH`
+- Clone this project
 
-Clone this repo into your `$GOPATH`. You can use `go get -d github.com/codacy/helm-ssm`
-for that.
-
+- In the project directory run
 ```sh
-$ cd $GOPATH/src/github.com/codacy/helm-ssm
 $ make install
 ```
 

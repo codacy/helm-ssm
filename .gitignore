@@ -3,3 +3,7 @@ bin
 _dist
 .version
 
+.vscode/
+*~
+.*.swp
+
