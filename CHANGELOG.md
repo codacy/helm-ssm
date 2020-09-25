@@ -13,3 +13,4 @@ you can check [GitHub releases](https://github.com/codacy/helm-ssm/releases) for
 - Removed `required` field
 - Added `default` field.
   Now you should explicitly say you want the `default=` (empty string) instead of that being implicit.
+- The input file flag `-t` was changed to `-o`
