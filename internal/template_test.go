@@ -5,6 +5,8 @@ import (
 	"syscall"
 	"testing"
 	"text/template"
+
+	"github.com/Masterminds/sprig"
 )
 
 func createTempFile() (string, error) {
@@ -59,7 +61,7 @@ func TestFailExecuteTemplate(t *testing.T) {
 	}
 }
 
-func TestGetFuncMap(t *testing.T) {
+func TestSsmFunctionExistsInFuncMap(t *testing.T) {
 	t.Logf("\"ssm\" function should exist in function map.")
 	funcMap := GetFuncMap("")
 	keys := make([]string, len(funcMap))
@@ -68,6 +70,24 @@ func TestGetFuncMap(t *testing.T) {
 	}
 	if _, exists := funcMap["ssm"]; !exists {
 		t.Errorf("Expected \"ssm\" function in function map. Got the following functions: %s", keys)
+	}
+}
+
+func TestSprigFunctionsExistInFuncMap(t *testing.T) {
+	t.Logf("\"quote\" function (from sprig) should exist in function map.")
+	funcMap := GetFuncMap("")
+	keys := make([]string, len(funcMap))
+	for k := range funcMap {
+		keys = append(keys, k)
+	}
+
+	if _, exists := funcMap["quote"]; !exists {
+		t.Errorf("Expected \"quote\" function in function map. Got the following functions: %s", keys)
+	}
+
+	t.Logf("number of functions in function map minus custom functions should match those in sprig")
+	if len(funcMap)-1 != len(sprig.GenericFuncMap()) {
+		t.Errorf("Expected function map to include all sprig functions. Got the following functions: %s", keys)
 	}
 }
 

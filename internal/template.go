@@ -8,6 +8,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/Masterminds/sprig"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
@@ -51,6 +52,9 @@ func ExecuteTemplate(sourceFilePath string, funcMap template.FuncMap, verbose bo
 func GetFuncMap(profile string) template.FuncMap {
 	// Clone the func map because we are adding context-specific functions.
 	var funcMap template.FuncMap = map[string]interface{}{}
+	for k, v := range sprig.GenericFuncMap() {
+		funcMap[k] = v
+	}
 
 	awsSession := newAWSSession(profile)
 	funcMap["ssm"] = func(ssmPath string, options ...string) (string, error) {
@@ -61,11 +65,6 @@ func GetFuncMap(profile string) template.FuncMap {
 		}
 		return str, err
 	}
-
-	funcMap["quote"] = func(input string) string {
-		return "\"" + input + "\""
-	}
-
 	return funcMap
 }
 
