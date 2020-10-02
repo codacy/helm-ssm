@@ -4,7 +4,8 @@
 [![CircleCI](https://circleci.com/gh/codacy/helm-ssm.svg?style=svg)](https://circleci.com/gh/codacy/helm-ssm)
 
 This is a **helm3** plugin to help developers inject values coming from AWS SSM
-parameters, on the `values.yaml` file.
+parameters, on the `values.yaml` file. It also leverages the wonderful [sprig](http://masterminds.github.io/sprig/)
+package, thus making all its functions available when parsing.
 
 Since **helm2 is deprecated** the current version of the plugin only supports helm3. The last version
 to support helm2 is [v2.2.1](https://github.com/codacy/helm-ssm/releases/tag/2.2.1). There will be

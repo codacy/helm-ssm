@@ -3,7 +3,8 @@
 ## 3.x
 
 Helm 2 support is dropped and dependencies on its api were removed. This means helm extensions to go templates
-are not supported by this plugin, since the helm engine funcMap is now private.
+are not supported by this plugin, since the helm engine funcMap is now private. The functions from the
+[sprig](http://masterminds.github.io/sprig/) are now used instead.
 
 ## 2.0.x
 
