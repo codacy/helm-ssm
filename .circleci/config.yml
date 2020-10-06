@@ -71,7 +71,7 @@ jobs:
             echo "Publishing version ${VERSION}"
             ls -lisah ./_dist/
 
-            curl -L https://github.com/cli/cli/releases/download/v1.0.0/gh_1.0.0_linux_amd64.deb -o gh.deb
+            curl -L https://github.com/cli/cli/releases/download/v1.1.0/gh_1.1.0_linux_amd64.deb -o gh.deb
             sudo dpkg -i gh.deb
             echo ${GITHUB_TOKEN} | gh auth login --with-token
 
