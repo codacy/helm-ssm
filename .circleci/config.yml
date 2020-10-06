@@ -74,14 +74,15 @@ jobs:
             curl -L https://github.com/cli/cli/releases/download/v1.1.0/gh_1.1.0_linux_amd64.deb -o gh.deb
             sudo dpkg -i gh.deb
             echo ${GITHUB_TOKEN} | gh auth login --with-token
-
+            gh config set prompt disabled
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               export RELEASE_TAG="latest"
             else
               export RELEASE_TAG="dev"
             fi
-            gh release create ${VERSION} './_dist/'
-            gh release upload ${RELEASE_TAG} ./_dist/ --clobber
+            TITLE=$(git log -1 --pretty=%f)
+            gh release create ${VERSION} ./_dist/*.tgz -t ${TITLE}
+            gh release upload ${RELEASE_TAG} ./_dist/*.tgz --clobber -t ${TITLE}
 
 
 workflows:
