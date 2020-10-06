@@ -8,10 +8,10 @@ jobs:
     docker: # run the steps with Docker
       # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
       - image: circleci/golang:1.15 #
-    
+
     # directory where steps are run. Path must conform to the Go Workspace requirements
     working_directory: ~/workdir/helm-ssm
-    
+
     environment: # environment variables for the build itself
       TEST_RESULTS: /tmp/test-results # path to where test results will be saved
 
@@ -38,7 +38,7 @@ jobs:
 
       - persist_to_workspace:
           root: ~/workdir/helm-ssm
-          paths: 
+          paths:
             - '*'
 
       - save_cache: # Store cache in the /go/pkg directory
@@ -80,8 +80,9 @@ jobs:
             else
               export RELEASE_TAG="dev"
             fi
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} ./_dist/
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace ${RELEASE_TAG} ./_dist/
+            gh release create ${VERSION} './_dist/'
+            gh release upload ${RELEASE_TAG} ./_dist/ --clobber
+
 
 workflows:
   version: 2
