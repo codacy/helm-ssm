@@ -70,7 +70,11 @@ jobs:
             export VERSION="$(cat .version)"
             echo "Publishing version ${VERSION}"
             ls -lisah ./_dist/
-            go get github.com/tcnksm/ghr
+
+            curl -L https://github.com/cli/cli/releases/download/v1.0.0/gh_1.0.0_linux_amd64.deb -o gh.deb
+            sudo dpkg -i gh.deb
+            echo ${GITHUB_TOKEN} | gh auth login --with-token
+
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               export RELEASE_TAG="latest"
             else
