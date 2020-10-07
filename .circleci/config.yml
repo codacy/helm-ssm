@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@2.0.0
+  codacy: codacy/base@5.0.4
 
 jobs:
   build: # runs not using Workflows must have a `build` job as entry point
