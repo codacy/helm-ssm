@@ -95,7 +95,6 @@ workflows:
             branches:
               only:
                 - master
-                - fix/content-type
       - publish:
           context: CodacyGitHub
           requires:
