@@ -12,7 +12,7 @@ $(helm env)
 # on Windows where helm returns a Windows path but we
 # need a Unix path
 if type cygpath > /dev/null; then
-  HELM_PLUGIN=$(cygpath -u $HELM_PLUGIN)
+  HELM_PLUGIN=$(cygpath -u "$HELM_PLUGIN")
 fi
 
 if [[ $SKIP_BIN_INSTALL == "1" ]]; then
@@ -37,8 +37,7 @@ initArch() {
 
 # initOS discovers the operating system for this system.
 initOS() {
-  OS=$(echo `uname`|tr '[:upper:]' '[:lower:]')
-
+  OS=$(echo $(uname)|tr '[:upper:]' '[:lower:]')
   case "$OS" in
     # Msys support
     msys*) OS='windows';;
@@ -80,7 +79,6 @@ downloadFile() {
   PLUGIN_TMP_FILE="/tmp/${PROJECT_NAME}.tgz"
   echo "Downloading $DOWNLOAD_URL"
   if type "curl" > /dev/null; then
-    echo "curl -L "$DOWNLOAD_URL" -o "$PLUGIN_TMP_FILE""
     curl -L "$DOWNLOAD_URL" -o "$PLUGIN_TMP_FILE"
   elif type "wget" > /dev/null; then
     wget -q -O "$PLUGIN_TMP_FILE" "$DOWNLOAD_URL"
