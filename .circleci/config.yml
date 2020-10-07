@@ -101,7 +101,7 @@ workflows:
           requires:
             - tag_version
       - codacy/tag_version:
-          name: tag_version
+          name: tag_version_latest
           context: CodacyAWS
           version: latest
           force: true
