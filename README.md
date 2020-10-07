@@ -78,22 +78,8 @@ $ helm ssm [flags]
 Choose the latest version from the releases and install the
 appropriate version for your OS as indicated below.
 
-### Linux
-
 ```sh
-$ helm plugin install https://github.com/codacy/helm-ssm/releases/download/latest/helm-ssm-linux.tgz
-```
-
-### MacOS
-
-```sh
-$ helm plugin install https://github.com/codacy/helm-ssm/releases/download/latest/helm-ssm-macos.tgz
-```
-
-### Windows
-
-```sh
-$ helm plugin install https://github.com/codacy/helm-ssm/releases/download/latest/helm-ssm-windows.tgz
+$ helm plugin add https://github.com/codacy/helm-ssm
 ```
 
 ### Developer (From Source) Install
