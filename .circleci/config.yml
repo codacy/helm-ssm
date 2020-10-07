@@ -99,3 +99,10 @@ workflows:
           context: CodacyGitHub
           requires:
             - tag_version
+      - codacy/tag_version:
+          name: tag_version
+          context: CodacyAWS
+          version: latest
+          force: true
+          requires:
+            - publish
