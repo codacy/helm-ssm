@@ -7,5 +7,5 @@ ignoreFlags: false
 useTunnel: false
 command: "$HELM_PLUGIN_DIR/helm-ssm"
 hooks:
-  install: chmod +x $HELM_PLUGIN_DIR/helm-ssm
-  update: chmod +x $HELM_PLUGIN_DIR/helm-ssm
+  install: "$HELM_PLUGIN_DIR/install-binary.sh"
+  update: "$HELM_PLUGIN_DIR/install-binary.sh"
