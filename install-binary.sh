@@ -5,7 +5,7 @@
 
 PROJECT_NAME="helm-ssm"
 PROJECT_GH="codacy/$PROJECT_NAME"
-$(helm env)
+eval $(helm env)
 
 # Convert the HELM_PLUGIN to unix if cygpath is
 # available. This is the case when using MSYS2 or Cygwin
