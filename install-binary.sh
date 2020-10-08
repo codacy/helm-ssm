@@ -7,14 +7,6 @@ PROJECT_NAME="helm-ssm"
 PROJECT_GH="codacy/$PROJECT_NAME"
 eval $(helm env)
 
-# Convert the HELM_PLUGIN to unix if cygpath is
-# available. This is the case when using MSYS2 or Cygwin
-# on Windows where helm returns a Windows path but we
-# need a Unix path
-if type cygpath > /dev/null; then
-  HELM_PLUGIN=$(cygpath -u "$HELM_PLUGIN")
-fi
-
 if [[ $SKIP_BIN_INSTALL == "1" ]]; then
   echo "Skipping binary install"
   exit
@@ -67,9 +59,9 @@ getDownloadURL() {
   # Use the GitHub API to find the latest version for this project.
   local latest_url="https://api.github.com/repos/$PROJECT_GH/releases/latest"
   if type "curl" > /dev/null; then
-    DOWNLOAD_URL=$(curl -s $latest_url | grep $OS | awk '/\"browser_download_url\":/{gsub( /[,\"]/,"", $2); print $2}')
+    DOWNLOAD_URL=$(curl -s $latest_url | grep $OS | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
   elif type "wget" > /dev/null; then
-    DOWNLOAD_URL=$(wget -q -O - $latest_url | awk '/\"browser_download_url\":/{gsub( /[,\"]/,"", $2); print $2}')
+    DOWNLOAD_URL=$(wget -q -O - $latest_url | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
   fi
 }
 
@@ -93,9 +85,9 @@ installFile() {
   tar xf "$PLUGIN_TMP_FILE" -C "$HELM_TMP"
   echo "$HELM_TMP"
   HELM_TMP_BIN="$HELM_TMP/helm-ssm"
-  echo "Preparing to install into ${HELM_PLUGIN}"
+  echo "Preparing to install into ${HELM_PLUGINS}"
   # Use * to also copy the file withe the exe suffix on Windows
-  cp "$HELM_TMP_BIN"* "$HELM_PLUGIN"
+  cp "$HELM_TMP_BIN" "$HELM_PLUGINS/helm-ssm"
 }
 
 # fail_trap is executed if an error occurs.
@@ -111,10 +103,10 @@ fail_trap() {
 # testVersion tests the installed client to make sure it is working.
 testVersion() {
   set +e
-  echo "$PROJECT_NAME installed into $HELM_PLUGIN/$PROJECT_NAME"
+  echo "$PROJECT_NAME installed into $HELM_PLUGINS/$PROJECT_NAME"
   # To avoid to keep track of the Windows suffix,
   # call the plugin assuming it is in the PATH
-  PATH=$PATH:$HELM_PLUGIN
+  PATH=$PATH:$HELM_PLUGINS/$PROJECT_NAME
   helm-ssm -h
   set -e
 }
