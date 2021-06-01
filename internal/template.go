@@ -3,6 +3,7 @@ package hssm
 import (
 	"bytes"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -115,8 +116,9 @@ func handleOptions(options []string) (map[string]string, error) {
 func newAWSSession(profile string) *session.Session {
 	// Specify profile for config and region for requests
 	session := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-		Profile:           profile,
+		SharedConfigState:       session.SharedConfigEnable,
+		Profile:                 profile,
+		AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
 	}))
 	return session
 }
