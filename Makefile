@@ -17,6 +17,10 @@ install: dist
 	cp -r $(DIST)/$$file/* $(HELM_PLUGIN_DIR) ;\
 	rm -rf $(DIST)/$$file
 
+.PHONY: build-linux
+build-linux:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${HELM_PLUGIN_NAME} -ldflags $(LDFLAGS) ./cmd
+
 .PHONY: hookInstall
 hookInstall: build
 
