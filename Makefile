@@ -17,9 +17,14 @@ install: dist
 	cp -r $(DIST)/$$file/* $(HELM_PLUGIN_DIR) ;\
 	rm -rf $(DIST)/$$file
 
-.PHONY: build-linux
-build-linux:
+.PHONY: build-lambda-tar
+build-lambda-tar:
+	$(eval HELM_PLUGIN_DIR="/opt/plugins/helm-ssm")
+	sed -i.bak 's/version:.*/version: "'$(VERSION)'"/g' plugin.yaml && rm plugin.yaml.bak
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${HELM_PLUGIN_NAME} -ldflags $(LDFLAGS) ./cmd
+	tar -zcvf ${HELM_PLUGIN_NAME}-linux.tgz ${HELM_PLUGIN_NAME} README.md LICENSE plugin.yaml
+	rm ${HELM_PLUGIN_NAME}
+
 
 .PHONY: hookInstall
 hookInstall: build
