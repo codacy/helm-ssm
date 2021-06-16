@@ -114,11 +114,21 @@ func handleOptions(options []string) (map[string]string, error) {
 }
 
 func newAWSSession(profile string) *session.Session {
-	// Specify profile for config and region for requests
-	session := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState:       session.SharedConfigEnable,
-		Profile:                 profile,
-		AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
-	}))
-	return session
+	// Turn off mfa when helm-ssm is run in cicd lambda function
+	var s *session.Session
+	_, lambda := os.LookupEnv("AWS_LAMBDA_FUNCTION_NAME")
+	if lambda {
+		region := os.Getenv("AWS_REGION")
+		s, _ = session.NewSession(&aws.Config{
+			Region: &region,
+		})
+	} else {
+		s = session.Must(session.NewSessionWithOptions(session.Options{
+			SharedConfigState:       session.SharedConfigEnable,
+			Profile:                 profile,
+			AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
+		}))
+	}
+
+	return s
 }
