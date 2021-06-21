@@ -79,7 +79,7 @@ Choose the latest version from the releases and install the
 appropriate version for your OS as indicated below.
 
 ```sh
-$ helm plugin add https://github.com/codacy/helm-ssm
+$ helm plugin add https://github.com/medbridge/helm-ssm
 ```
 
 ### Developer (From Source) Install
