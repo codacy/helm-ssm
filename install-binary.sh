@@ -4,7 +4,7 @@
 # Combination of the Glide and Helm scripts, with my own tweaks.
 
 PROJECT_NAME="helm-ssm"
-PROJECT_GH="medbridge/$PROJECT_NAME"
+PROJECT_GH="MedBridge/$PROJECT_NAME"
 eval $(helm env)
 
 if [[ $SKIP_BIN_INSTALL == "1" ]]; then
