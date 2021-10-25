@@ -39,7 +39,7 @@ ingress:
 
 ```
 
-when you do not want a key to be defined, use a with using a default empty value in the go templates:
+when you do not want a key to be defined, you can use a condition and an empty default value:
 
 ```yaml
 service:
