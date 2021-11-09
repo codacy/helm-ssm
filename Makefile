@@ -38,6 +38,8 @@ dist:
 	tar -zcvf $(DIST)/${HELM_PLUGIN_NAME}-linux-arm.tgz ${HELM_PLUGIN_NAME} README.md LICENSE plugin.yaml
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ${HELM_PLUGIN_NAME} -ldflags $(LDFLAGS) ./cmd
 	tar -zcvf $(DIST)/${HELM_PLUGIN_NAME}-macos.tgz ${HELM_PLUGIN_NAME} README.md LICENSE plugin.yaml
+	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ${HELM_PLUGIN_NAME} -ldflags $(LDFLAGS) ./cmd
+	tar -zcvf $(DIST)/${HELM_PLUGIN_NAME}-macos-arm.tgz ${HELM_PLUGIN_NAME} README.md LICENSE plugin.yaml
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ${HELM_PLUGIN_NAME}.exe -ldflags $(LDFLAGS) ./cmd
 	tar -zcvf $(DIST)/${HELM_PLUGIN_NAME}-windows.tgz ${HELM_PLUGIN_NAME}.exe README.md LICENSE plugin.yaml
 	rm ${HELM_PLUGIN_NAME}
