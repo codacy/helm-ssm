@@ -4,7 +4,7 @@
 # Combination of the Glide and Helm scripts, with my own tweaks.
 
 PROJECT_NAME="helm-ssm"
-PROJECT_GH="codacy/$PROJECT_NAME"
+PROJECT_GH="Altitude-sports/$PROJECT_NAME"
 eval $(helm env)
 
 if [[ $SKIP_BIN_INSTALL == "1" ]]; then
@@ -95,7 +95,7 @@ fail_trap() {
   result=$?
   if [ "$result" != "0" ]; then
     echo "Failed to install $PROJECT_NAME"
-    echo "For support, go to https://github.com/codacy/helm-ssm."
+    echo "For support, go to https://github.com/Altitude-sports/helm-ssm."
   fi
   exit $result
 }

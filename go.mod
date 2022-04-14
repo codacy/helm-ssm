@@ -1,4 +1,4 @@
-module github.com/codacy/helm-ssm
+module github.com/Altitude-sports/helm-ssm
 
 go 1.15
 
