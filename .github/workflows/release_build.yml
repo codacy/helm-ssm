@@ -16,11 +16,7 @@ jobs:
           echo ${GITHUB_REF#refs/*/} > .version
       - name: Test project
         run: |
-          mkdir -p $TEST_RESULTS
-          go get github.com/jstemmer/go-junit-report
-          make test | go-junit-report >> ${TEST_RESULTS}/go-test-report.xml
-        env:
-          TEST_RESULTS: ./helm-ssm
+          make test
       - name: Build
         run: make dist
       - name: Release
