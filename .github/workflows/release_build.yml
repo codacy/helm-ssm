@@ -29,4 +29,4 @@ jobs:
           args: release --rm-dist
           workdir: ./cmd # <-- path to directory with main() func
         env:
-          GITHUB_TOKEN: ${{ secrets.GO_RELEASER_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
