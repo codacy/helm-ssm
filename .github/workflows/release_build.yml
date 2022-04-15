@@ -1,32 +1,30 @@
-name: Release Go project
+name: Release Helm SSM
 
 on:
   push:
     tags:
-      - "*" # triggers only if push new tag version, like `0.8.4` or else
+      - '*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   build:
-    name: GoReleaser build
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out code into the Go module directory
+      - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # See: https://goreleaser.com/ci/actions/
-
-      - name: Set up Go 1.14
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.14
-        id: go
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@master
-        with:
-          version: latest
-          args: release --rm-dist
-          workdir: ./cmd # <-- path to directory with main() func
+      - name: Test project
+        run: |
+          mkdir -p $TEST_RESULTS
+          go get github.com/jstemmer/go-junit-report
+          make test | go-junit-report >> ${TEST_RESULTS}/go-test-report.xml
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEST_RESULTS: ./helm-ssm
+      - name: Build
+        run: make dist
+      - name: Version
+        run: |
+          echo ${GITHUB_REF#refs/*/} > .version
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./_dist/*.tgz
