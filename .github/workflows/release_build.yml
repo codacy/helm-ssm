@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Version
+        run: |
+          echo ${GITHUB_REF#refs/*/} > .version
       - name: Test project
         run: |
           mkdir -p $TEST_RESULTS
@@ -20,9 +23,6 @@ jobs:
           TEST_RESULTS: ./helm-ssm
       - name: Build
         run: make dist
-      - name: Version
-        run: |
-          echo ${GITHUB_REF#refs/*/} > .version
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
