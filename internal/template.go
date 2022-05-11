@@ -49,7 +49,7 @@ func ExecuteTemplate(sourceFilePath string, funcMap template.FuncMap, verbose bo
 }
 
 // GetFuncMap builds the relevant function map to helm_ssm
-func GetFuncMap(profile string) template.FuncMap {
+func GetFuncMap(profile string, prefix string) template.FuncMap {
 	// Clone the func map because we are adding context-specific functions.
 	var funcMap template.FuncMap = map[string]interface{}{}
 	for k, v := range sprig.GenericFuncMap() {
@@ -58,7 +58,7 @@ func GetFuncMap(profile string) template.FuncMap {
 
 	awsSession := newAWSSession(profile)
 	funcMap["ssm"] = func(ssmPath string, options ...string) (string, error) {
-		optStr, err := resolveSSMParameter(awsSession, ssmPath, options)
+		optStr, err := resolveSSMParameter(awsSession, prefix, ssmPath, options)
 		str := ""
 		if optStr != nil {
 			str = *optStr
@@ -68,7 +68,7 @@ func GetFuncMap(profile string) template.FuncMap {
 	return funcMap
 }
 
-func resolveSSMParameter(session *session.Session, ssmPath string, options []string) (*string, error) {
+func resolveSSMParameter(session *session.Session, defaultPrefix string, ssmPath string, options []string) (*string, error) {
 	opts, err := handleOptions(options)
 	if err != nil {
 		return nil, err
@@ -86,7 +86,14 @@ func resolveSSMParameter(session *session.Session, ssmPath string, options []str
 		svc = ssm.New(session)
 	}
 
-	return GetSSMParameter(svc, opts["prefix"]+ssmPath, defaultValue, true)
+	var ssmFullPath string
+	if optPrefix, exists := opts["prefix"]; exists {
+		ssmFullPath = optPrefix + ssmPath
+	} else {
+		ssmFullPath = defaultPrefix + ssmPath
+	}
+
+	return GetSSMParameter(svc, ssmFullPath, defaultValue, true)
 }
 
 func handleOptions(options []string) (map[string]string, error) {
