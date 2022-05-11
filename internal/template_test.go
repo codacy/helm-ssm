@@ -63,7 +63,7 @@ func TestFailExecuteTemplate(t *testing.T) {
 
 func TestSsmFunctionExistsInFuncMap(t *testing.T) {
 	t.Logf("\"ssm\" function should exist in function map.")
-	funcMap := GetFuncMap("")
+	funcMap := GetFuncMap("", "")
 	keys := make([]string, len(funcMap))
 	for k := range funcMap {
 		keys = append(keys, k)
@@ -75,7 +75,7 @@ func TestSsmFunctionExistsInFuncMap(t *testing.T) {
 
 func TestSprigFunctionsExistInFuncMap(t *testing.T) {
 	t.Logf("\"quote\" function (from sprig) should exist in function map.")
-	funcMap := GetFuncMap("")
+	funcMap := GetFuncMap("", "")
 	keys := make([]string, len(funcMap))
 	for k := range funcMap {
 		keys = append(keys, k)
