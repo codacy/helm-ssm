@@ -113,9 +113,6 @@ func handleOptions(options []string) (map[string]string, error) {
 	if _, exists := opts["required"]; !exists {
 		opts["required"] = "true"
 	}
-	if _, exists := opts["prefix"]; !exists {
-		opts["prefix"] = ""
-	}
 	return opts, nil
 }
 
