@@ -58,8 +58,9 @@ verifySupported() {
 getDownloadURL() {
   # Use the GitHub API to find the latest version for this project.
   local latest_url="https://api.github.com/repos/$PROJECT_GH/releases/latest"
+  local suffix="$OS.tgz"
   if type "curl" > /dev/null; then
-    DOWNLOAD_URL=$(curl -s $latest_url | grep $OS | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
+    DOWNLOAD_URL=$(curl -s $latest_url | grep $suffix | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
   elif type "wget" > /dev/null; then
     DOWNLOAD_URL=$(wget -q -O - $latest_url | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
   fi
@@ -71,6 +72,8 @@ downloadFile() {
   PLUGIN_TMP_FILE="/tmp/${PROJECT_NAME}.tgz"
   echo "Downloading $DOWNLOAD_URL"
   if type "curl" > /dev/null; then
+    DOWNLOAD_URL=${DOWNLOAD_URL%$'\r'}
+    printf %s "$URL" | xxd
     curl -L "$DOWNLOAD_URL" -o "$PLUGIN_TMP_FILE"
   elif type "wget" > /dev/null; then
     wget -q -O "$PLUGIN_TMP_FILE" "$DOWNLOAD_URL"
