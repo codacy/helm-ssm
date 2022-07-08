@@ -72,8 +72,6 @@ downloadFile() {
   PLUGIN_TMP_FILE="/tmp/${PROJECT_NAME}.tgz"
   echo "Downloading $DOWNLOAD_URL"
   if type "curl" > /dev/null; then
-    DOWNLOAD_URL=${DOWNLOAD_URL%$'\r'}
-    printf %s "$URL" | xxd
     curl -L "$DOWNLOAD_URL" -o "$PLUGIN_TMP_FILE"
   elif type "wget" > /dev/null; then
     wget -q -O "$PLUGIN_TMP_FILE" "$DOWNLOAD_URL"
