@@ -1,13 +1,12 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@5.0.4
+  codacy: codacy/base@9.3.5
 
 jobs:
   build: # runs not using Workflows must have a `build` job as entry point
     docker: # run the steps with Docker
-      # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
-      - image: circleci/golang:1.15 #
+      - image: cimg/go:1.19 #
 
     # directory where steps are run. Path must conform to the Go Workspace requirements
     working_directory: ~/workdir/helm-ssm
@@ -26,7 +25,7 @@ jobs:
           keys:
             - v2020-09-pkg-cache
 
-      - run: go get github.com/jstemmer/go-junit-report
+      - run: go install github.com/jstemmer/go-junit-report/v2@v2.0.0
 
       - run:
           name: Run unit tests
@@ -55,8 +54,7 @@ jobs:
 
   publish: # runs not using Workflows must have a `build` job as entry point
     docker: # run the steps with Docker
-      # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
-      - image: circleci/golang:1.15 #
+      - image: cimg/golang:1.19 #
 
     # directory where steps are run. Path must conform to the Go Workspace requirements
     working_directory: ~/workdir/helm-ssm
