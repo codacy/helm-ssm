@@ -25,7 +25,7 @@ jobs:
           keys:
             - v2020-09-pkg-cache
 
-      - run: go install github.com/jstemmer/go-junit-report@latest
+      - run: go install github.com/jstemmer/go-junit-report/v2@v2.0.0
 
       - run:
           name: Run unit tests
