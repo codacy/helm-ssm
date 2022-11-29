@@ -49,21 +49,33 @@ func ExecuteTemplate(sourceFilePath string, funcMap template.FuncMap, verbose bo
 }
 
 // GetFuncMap builds the relevant function map to helm_ssm
-func GetFuncMap(profile string) template.FuncMap {
+func GetFuncMap(profile string, clean bool) template.FuncMap {
+
+	cleanFunc := func(...interface{}) (string, error) {
+		return "CLEANED_BY_HELM_SSM", nil
+	}
 	// Clone the func map because we are adding context-specific functions.
 	var funcMap template.FuncMap = map[string]interface{}{}
 	for k, v := range sprig.GenericFuncMap() {
-		funcMap[k] = v
+		if clean {
+			funcMap[k] = cleanFunc
+		} else {
+			funcMap[k] = v
+		}
 	}
 
 	awsSession := newAWSSession(profile)
-	funcMap["ssm"] = func(ssmPath string, options ...string) (string, error) {
-		optStr, err := resolveSSMParameter(awsSession, ssmPath, options)
-		str := ""
-		if optStr != nil {
-			str = *optStr
+	if clean {
+		funcMap["ssm"] = cleanFunc
+	} else {
+		funcMap["ssm"] = func(ssmPath string, options ...string) (string, error) {
+			optStr, err := resolveSSMParameter(awsSession, ssmPath, options)
+			str := ""
+			if optStr != nil {
+				str = *optStr
+			}
+			return str, err
 		}
-		return str, err
 	}
 	return funcMap
 }
