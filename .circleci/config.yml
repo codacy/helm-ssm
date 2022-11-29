@@ -54,7 +54,7 @@ jobs:
 
   publish: # runs not using Workflows must have a `build` job as entry point
     docker: # run the steps with Docker
-      - image: cimg/golang:1.19 #
+      - image: cimg/go:1.19 #
 
     # directory where steps are run. Path must conform to the Go Workspace requirements
     working_directory: ~/workdir/helm-ssm
