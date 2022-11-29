@@ -49,10 +49,10 @@ func ExecuteTemplate(sourceFilePath string, funcMap template.FuncMap, verbose bo
 }
 
 // GetFuncMap builds the relevant function map to helm_ssm
-func GetFuncMap(profile string, clean bool) template.FuncMap {
+func GetFuncMap(profile string, clean bool, tagCleaned string) template.FuncMap {
 
 	cleanFunc := func(...interface{}) (string, error) {
-		return "CLEANED_BY_HELM_SSM", nil
+		return tagCleaned, nil
 	}
 	// Clone the func map because we are adding context-specific functions.
 	var funcMap template.FuncMap = map[string]interface{}{}
