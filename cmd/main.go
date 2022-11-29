@@ -48,8 +48,8 @@ func main() {
 	f.BoolVarP(&dryRun, "dry-run", "d", false, "doesn't replace the file content")
 	f.StringVarP(&targetDir, "target-dir", "o", "", "dir to output content")
 	f.StringVarP(&profile, "profile", "p", "", "aws profile to fetch the ssm parameters")
-	f.BoolVarP(&clean, "clean", "c", false, "clean all ssm commands from file")
-	f.StringVarP(&tagCleaned, "tag-cleaned", "t", "", "replace cleaned command with given string")
+	f.BoolVarP(&clean, "clean", "c", false, "clean all template commands from file")
+	f.StringVarP(&tagCleaned, "tag-cleaned", "t", "", "replace cleaned template commands with given string")
 
 	cmd.MarkFlagRequired("values")
 

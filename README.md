@@ -61,9 +61,11 @@ $ helm ssm [flags]
 ### Flags
 
 ```sh
-  -d, --dry-run                 does not replace the file content
+  -c, --clean                   clean all template commands from file
+  -d, --dry-run                 doesn't replace the file content
   -h, --help                    help for ssm
   -p, --profile string          aws profile to fetch the ssm parameters
+  -t, --tag-cleaned string      replace cleaned template commands with given string
   -o, --target-dir string       dir to output content
   -f, --values valueFilesList   specify values in a YAML file (can specify multiple) (default [])
   -v, --verbose                 show the computed YAML values file/s
