@@ -45,7 +45,7 @@ func TestCleanTemplate(t *testing.T) {
 	}
 	defer syscall.Unlink(templateFilePath)
 	ioutil.WriteFile(templateFilePath, []byte(templateContent), 0644)
-	cleanFuncMap := GetFuncMap("DUMMY", true, "")
+	cleanFuncMap := GetFuncMap("DUMMY", "", true, "")
 	content, _ := ExecuteTemplate(templateFilePath, cleanFuncMap, false)
 	if content != expectedOutput {
 		t.Errorf("Expected content \"%s\". Got \"%s\"", expectedOutput, content)
@@ -64,7 +64,7 @@ func TestCleanAndTagTemplate(t *testing.T) {
 	}
 	defer syscall.Unlink(templateFilePath)
 	ioutil.WriteFile(templateFilePath, []byte(templateContent), 0644)
-	cleanFuncMap := GetFuncMap("DUMMY", true, cleanTag)
+	cleanFuncMap := GetFuncMap("DUMMY", "", true, cleanTag)
 	content, _ := ExecuteTemplate(templateFilePath, cleanFuncMap, false)
 	if content != expectedOutput {
 		t.Errorf("Expected content \"%s\". Got \"%s\"", expectedOutput, content)
@@ -100,7 +100,7 @@ func TestFailExecuteTemplate(t *testing.T) {
 
 func TestSsmFunctionExistsInFuncMap(t *testing.T) {
 	t.Logf("\"ssm\" function should exist in function map.")
-	funcMap := GetFuncMap("", false, "")
+	funcMap := GetFuncMap("", "", false, "")
 	keys := make([]string, len(funcMap))
 	for k := range funcMap {
 		keys = append(keys, k)
@@ -112,7 +112,7 @@ func TestSsmFunctionExistsInFuncMap(t *testing.T) {
 
 func TestSprigFunctionsExistInFuncMap(t *testing.T) {
 	t.Logf("\"quote\" function (from sprig) should exist in function map.")
-	funcMap := GetFuncMap("", false, "")
+	funcMap := GetFuncMap("", "", false, "")
 	keys := make([]string, len(funcMap))
 	for k := range funcMap {
 		keys = append(keys, k)
