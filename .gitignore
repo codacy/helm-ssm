@@ -3,7 +3,9 @@ bin
 _dist
 .version
 
+.idea/
 .vscode/
 *~
 .*.swp
+
 
