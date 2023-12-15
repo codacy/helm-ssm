@@ -1,8 +1,20 @@
 #!/usr/bin/env bash
-
-# Copied from https://github.com/technosophos/helm-template
-# Combination of the Glide and Helm scripts, with my own tweaks.
-
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --version*|-v*)
+      if [[ "$1" != *=* ]]; then shift; fi
+      VERSION="${1#*=}"
+      ;;
+    *)
+      >&2 printf "Error: Invalid argument\n"
+      exit 1
+      ;;
+  esac
+  shift
+done
+if [ -z $VERSION ]; then
+    VERSION='latest'
+fi
 PROJECT_NAME="helm-ssm"
 PROJECT_GH="codacy/$PROJECT_NAME"
 eval $(helm env)
@@ -42,7 +54,7 @@ initOS() {
 # verifySupported checks that the os/arch combination is supported for
 # binary builds.
 verifySupported() {
-  local supported="linux-amd64\nmacos-amd64\nwindows-amd64"
+  local supported="linux-amd64\nmacos-amd64\nwindows-amd64\linux-arm-armv5\linux-arm-armv6\linux-arm-armv7\linux-arm-arm64"
   if ! echo "${supported}" | grep -q "${OS}-${ARCH}"; then
     echo "No prebuild binary for ${OS}-${ARCH}."
     exit 1
@@ -57,11 +69,16 @@ verifySupported() {
 # getDownloadURL checks the latest available version.
 getDownloadURL() {
   # Use the GitHub API to find the latest version for this project.
-  local latest_url="https://api.github.com/repos/$PROJECT_GH/releases/latest"
-  if type "curl" > /dev/null; then
-    DOWNLOAD_URL=$(curl -s $latest_url | grep $OS | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
-  elif type "wget" > /dev/null; then
-    DOWNLOAD_URL=$(wget -q -O - $latest_url | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
+  if [VERSION='latest']; then
+    local latest_url="https://api.github.com/repos/$PROJECT_GH/releases/$VERSION"
+    echo $latest_url
+    if type "curl" > /dev/null; then
+      DOWNLOAD_URL=$(curl -s $latest_url | sort -r | grep $OS -m3 | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
+    elif type "wget" > /dev/null; then
+      DOWNLOAD_URL=$(wget -q -O - $latest_url | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
+    fi
+  else
+    DOWNLOAD_URL="https://github.com/$PROJECT_GH/releases/download/$VERSION/helm-ssm-$OS.tgz"
   fi
 }
 
