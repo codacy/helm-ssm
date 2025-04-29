@@ -15,6 +15,9 @@ var targetDir string
 var profile string
 var verbose bool
 var dryRun bool
+var clean bool
+var tagCleaned string
+var prefix string
 
 type valueFilesList []string
 
@@ -46,6 +49,9 @@ func main() {
 	f.BoolVarP(&dryRun, "dry-run", "d", false, "doesn't replace the file content")
 	f.StringVarP(&targetDir, "target-dir", "o", "", "dir to output content")
 	f.StringVarP(&profile, "profile", "p", "", "aws profile to fetch the ssm parameters")
+	f.BoolVarP(&clean, "clean", "c", false, "clean all template commands from file")
+	f.StringVarP(&tagCleaned, "tag-cleaned", "t", "", "replace cleaned template commands with given string")
+	f.StringVarP(&prefix, "prefix", "P", "", "prefix for all parameters without affecting the path. ignored if individual prefix is defined")
 
 	cmd.MarkFlagRequired("values")
 
@@ -56,7 +62,7 @@ func main() {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	funcMap := hssm.GetFuncMap(profile)
+	funcMap := hssm.GetFuncMap(profile, prefix, clean, tagCleaned)
 	for _, filePath := range valueFiles {
 		content, err := hssm.ExecuteTemplate(filePath, funcMap, verbose)
 		if err != nil {
