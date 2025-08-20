@@ -22,7 +22,7 @@ jobs:
           version: v1.62.2
           args: --timeout 10m --concurrency 4
       - run: go mod download
-      - run: go test -v ./..
+      - run: go test -v ./internal
       - run: go build -o helm-ssm ./cmd
 
   goreleaser:
