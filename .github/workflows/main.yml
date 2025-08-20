@@ -23,7 +23,7 @@ jobs:
           args: --timeout 10m --concurrency 4
       - run: go mod download
       - run: go test -v ./..
-      - run: go build .
+      - run: go build -o helm-ssm ./cmd
 
   goreleaser:
     runs-on: blacksmith-2vcpu-ubuntu-2204-arm
