@@ -3,7 +3,6 @@ package hssm
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
@@ -24,12 +23,12 @@ func WriteFileD(fileName string, targetDir string, content string) error {
 
 // WriteFile dumps a given content on the file with path `targetFilePath`.
 func WriteFile(targetFilePath string, content string) error {
-	return ioutil.WriteFile(targetFilePath, []byte(content), 0777)
+	return os.WriteFile(targetFilePath, []byte(content), 0777)
 }
 
 // ExecuteTemplate loads a template file, executes is against a given function map and writes the output
 func ExecuteTemplate(sourceFilePath string, funcMap template.FuncMap, verbose bool) (string, error) {
-	fileContent, err := ioutil.ReadFile(sourceFilePath)
+	fileContent, err := os.ReadFile(sourceFilePath)
 	if err != nil {
 		return "", err
 	}
@@ -43,7 +42,7 @@ func ExecuteTemplate(sourceFilePath string, funcMap template.FuncMap, verbose bo
 		return "", err
 	}
 	if verbose {
-		fmt.Println(string(buf.Bytes()))
+		fmt.Println(buf.String())
 	}
 	return buf.String(), nil
 }
@@ -122,7 +121,7 @@ func handleOptions(options []string) (map[string]string, error) {
 	for _, o := range options {
 		split := strings.Split(o, "=")
 		if len(split) != 2 {
-			return nil, fmt.Errorf("Invalid option: %s. Valid options: %s", o, validOptions)
+			return nil, fmt.Errorf("invalid option: %s. Valid options: %s", o, validOptions)
 		}
 		opts[split[0]] = split[1]
 	}
