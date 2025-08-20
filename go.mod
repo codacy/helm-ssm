@@ -1,6 +1,6 @@
-module github.com/codacy/helm-ssm
+module github.com/tutti-ch/helm-ssm
 
-go 1.15
+go 1.23
 
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
