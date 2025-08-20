@@ -13,10 +13,15 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "1.23.10"
+      - uses: golangci/golangci-lint-action@v6
+        env:
+          GOFLAGS: "-buildvcs=false"
+        with:
+          version: v1.62.2
+          args: --timeout 10m --concurrency 4
       - run: go mod download
-      - run: go install github.com/jstemmer/go-junit-report/v2@v2.0.0
-      - run: make test | go-junit-report >> ${TEST_RESULTS}/go-test-report.xml
-      - run: make dist
+      - run: go test -v ./..
+      - run: go build .
 
   goreleaser:
     runs-on: blacksmith-2vcpu-ubuntu-2204-arm
