@@ -3,6 +3,14 @@ name: build-release
 on: push
 
 jobs:
+  test-job:
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - run: echo "Hello world"
+
   build-test:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     permissions:
