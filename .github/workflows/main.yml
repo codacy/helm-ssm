@@ -1,0 +1,40 @@
+name: build-release
+
+on: push
+
+jobs:
+  build-test:
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.10"
+      - run: go mod download
+      - run: go install github.com/jstemmer/go-junit-report/v2@v2.0.0
+      - run: make test | go-junit-report >> ${TEST_RESULTS}/go-test-report.xml
+      - run: make dist
+
+    goreleaser:
+      runs-on: blacksmith-2vcpu-ubuntu-2204-arm
+      permissions:
+        id-token: write
+        contents: read
+      needs: build-test
+      if: startsWith(github.ref, 'refs/tags/v')
+      steps:
+        - uses: actions/checkout@v4
+        - run: git config --global --add safe.directory /__w/ccli/ccli
+        - uses: actions/setup-go@v5
+          with:
+            go-version: "1.23.10"
+        - uses: goreleaser/goreleaser-action@v5
+          with:
+            version: latest
+            args: release --clean -p 4
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            CGO_ENABLED: 0 # Required to run on Debian Buster for tutti-blocket deployment
