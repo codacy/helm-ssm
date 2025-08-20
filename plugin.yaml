@@ -6,3 +6,6 @@ description: |-
 ignoreFlags: false
 useTunnel: false
 command: "$HELM_PLUGIN_DIR/helm-ssm"
+hooks:
+  install: "$HELM_PLUGIN_DIR/install-binary.sh"
+  update: "$HELM_PLUGIN_DIR/install-binary.sh"
