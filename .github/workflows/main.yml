@@ -4,12 +4,12 @@ on: push
 
 jobs:
   test-job:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest #blacksmith-2vcpu-ubuntu-2204
     steps:
       - run: echo "Hello world"
 
   build-test:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest #blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
