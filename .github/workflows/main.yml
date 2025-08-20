@@ -3,13 +3,10 @@ name: build-release
 on: push
 
 jobs:
-  test-job:
-    runs-on: ubuntu-latest #blacksmith-2vcpu-ubuntu-2204
-    steps:
-      - run: echo "Hello world"
-
   build-test:
     runs-on: ubuntu-latest #blacksmith-2vcpu-ubuntu-2204
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -27,6 +24,8 @@ jobs:
 
   goreleaser:
     runs-on: blacksmith-2vcpu-ubuntu-2204-arm
+    permissions:
+      contents: write
     needs: build-test
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
