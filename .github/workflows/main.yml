@@ -4,7 +4,7 @@ on: push
 
 jobs:
   build-test:
-    runs-on: ubuntu-latest #blacksmith-2vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204-arm
     permissions:
       contents: write
     steps:
