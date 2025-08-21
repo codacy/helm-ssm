@@ -74,7 +74,7 @@ getDownloadURL() {
   if [ $VERSION = 'latest' ]; then
     local latest_url="https://api.github.com/repos/$PROJECT_GH/releases/$VERSION"
     if type "curl" > /dev/null; then
-      DOWNLOAD_URL=$(curl -s $latest_url | sort -r | grep $OS -m3 | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
+      DOWNLOAD_URL=$(curl -s $latest_url | sort -r | grep $OS | grep $ARCH | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
     elif type "wget" > /dev/null; then
       DOWNLOAD_URL=$(wget -q -O - $latest_url | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}')
     fi
