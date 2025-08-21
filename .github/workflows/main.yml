@@ -38,6 +38,7 @@ jobs:
         with:
           version: latest
           args: release --clean -p 4
+          workdir: "cmd/"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CGO_ENABLED: 0 # Required to run on Debian Buster for tutti-blocket deployment
