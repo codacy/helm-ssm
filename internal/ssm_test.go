@@ -58,7 +58,7 @@ func TestGetSSMParameterInvalidChar(t *testing.T) {
 	// Setup Test
 	mockSvc := &mockSSMClient{}
 	_, err := GetSSMParameter(mockSvc, key, nil, false)
-	assert.Error(t, err, "There is an invalid character in the name of the parameter: &%&/root/parameter5!$%&$&. It should match ([a-zA-Z0-9\\.\\-_/]*)")
+	assert.Error(t, err, "there is an invalid character in the name of the parameter: &%&/root/parameter5!$%&$&. It should match ([a-zA-Z0-9\\.\\-_/]*)")
 }
 
 // GetParameter is a mock for the SSM client

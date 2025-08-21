@@ -1,7 +1,7 @@
 package hssm
 
 import (
-	"io/ioutil"
+	"os"
 	"syscall"
 	"testing"
 	"text/template"
@@ -10,7 +10,7 @@ import (
 )
 
 func createTempFile() (string, error) {
-	file, err := ioutil.TempFile("", "")
+	file, err := os.CreateTemp("", "")
 	if err != nil {
 		return "", err
 	}
@@ -26,8 +26,15 @@ func TestExecuteTemplate(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	defer syscall.Unlink(templateFilePath)
-	ioutil.WriteFile(templateFilePath, []byte(templateContent), 0644)
+	defer func() {
+		if err := syscall.Unlink(templateFilePath); err != nil {
+			t.Logf("Failed to unlink temp file: %v", err)
+		}
+	}()
+	err = os.WriteFile(templateFilePath, []byte(templateContent), 0644)
+	if err != nil {
+		t.Fatalf("Failed to write template file: %v", err)
+	}
 	content, _ := ExecuteTemplate(templateFilePath, template.FuncMap{}, false)
 	if content != expectedOutput {
 		t.Errorf("Expected content \"%s\". Got \"%s\"", expectedOutput, content)
@@ -43,8 +50,16 @@ func TestCleanTemplate(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	defer syscall.Unlink(templateFilePath)
-	ioutil.WriteFile(templateFilePath, []byte(templateContent), 0644)
+	defer func() {
+		if err := syscall.Unlink(templateFilePath); err != nil {
+			t.Logf("Failed to unlink temp file: %v", err)
+		}
+	}()
+	err = os.WriteFile(templateFilePath, []byte(templateContent), 0644)
+	if err != nil {
+		t.Fatalf("Failed to write template file: %v", err)
+	}
+
 	cleanFuncMap := GetFuncMap("DUMMY", "", true, "")
 	content, _ := ExecuteTemplate(templateFilePath, cleanFuncMap, false)
 	if content != expectedOutput {
@@ -62,8 +77,15 @@ func TestCleanAndTagTemplate(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	defer syscall.Unlink(templateFilePath)
-	ioutil.WriteFile(templateFilePath, []byte(templateContent), 0644)
+	defer func() {
+		if err := syscall.Unlink(templateFilePath); err != nil {
+			t.Logf("Failed to unlink temp file: %v", err)
+		}
+	}()
+	err = os.WriteFile(templateFilePath, []byte(templateContent), 0644)
+	if err != nil {
+		t.Fatalf("Failed to write template file: %v", err)
+	}
 	cleanFuncMap := GetFuncMap("DUMMY", "", true, cleanTag)
 	content, _ := ExecuteTemplate(templateFilePath, cleanFuncMap, false)
 	if content != expectedOutput {
@@ -80,8 +102,11 @@ func TestWriteFile(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	WriteFile(templateFilePath, templateContent)
-	fileContent, err := ioutil.ReadFile(templateFilePath)
+	err = WriteFile(templateFilePath, templateContent)
+	if err != nil {
+		t.Fatalf("Failed to write file: %v", err)
+	}
+	fileContent, err := os.ReadFile(templateFilePath)
 	if err != nil {
 		panic(err)
 	}

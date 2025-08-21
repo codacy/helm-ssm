@@ -15,7 +15,7 @@ func GetSSMParameter(svc ssmiface.SSMAPI, name string, defaultValue *string, dec
 	r, _ := regexp.Compile(regex)
 	match := r.FindString(name)
 	if match == "" {
-		return nil, fmt.Errorf("There is an invalid character in the name of the parameter: %s. It should match %s", name, regex)
+		return nil, fmt.Errorf("there is an invalid character in the name of the parameter: %s. It should match %s", name, regex)
 	}
 	// Create the request to SSM
 	getParameterInput := &ssm.GetParameterInput{

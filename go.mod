@@ -1,4 +1,4 @@
-module github.com/codacy/helm-ssm
+module github.com/tutti-ch/helm-ssm
 
 go 1.23.0
 

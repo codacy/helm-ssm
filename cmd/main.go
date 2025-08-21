@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	hssm "github.com/codacy/helm-ssm/internal"
 	"github.com/spf13/cobra"
+	hssm "github.com/tutti-ch/helm-ssm/internal"
 )
 
 var valueFiles valueFilesList
@@ -53,7 +53,11 @@ func main() {
 	f.StringVarP(&tagCleaned, "tag-cleaned", "t", "", "replace cleaned template commands with given string")
 	f.StringVarP(&prefix, "prefix", "P", "", "prefix for all parameters without affecting the path. ignored if individual prefix is defined")
 
-	cmd.MarkFlagRequired("values")
+	err := cmd.MarkFlagRequired("values")
+	if err != nil {
+		fmt.Println("Error marking flag required:", err)
+		os.Exit(1)
+	}
 
 	if err := cmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -69,7 +73,10 @@ func run(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		if !dryRun {
-			write(filePath, targetDir, content)
+			err := write(filePath, targetDir, content)
+			if err != nil {
+				return fmt.Errorf("failed to write file %s: %w", filePath, err)
+			}
 		}
 	}
 	return nil

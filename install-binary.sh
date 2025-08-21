@@ -18,7 +18,7 @@ if [ -z $VERSION ]; then
 fi
 
 PROJECT_NAME="helm-ssm"
-PROJECT_GH="codacy/$PROJECT_NAME"
+PROJECT_GH="tutti-ch/$PROJECT_NAME"
 eval $(helm env)
 
 if [[ $SKIP_BIN_INSTALL == "1" ]]; then
@@ -113,7 +113,7 @@ fail_trap() {
   result=$?
   if [ "$result" != "0" ]; then
     echo "Failed to install $PROJECT_NAME"
-    echo "For support, go to https://github.com/codacy/helm-ssm."
+    echo "For support, go to https://github.com/tutti-ch/helm-ssm."
   fi
   exit $result
 }
