@@ -27,7 +27,7 @@ jobs:
     permissions:
       contents: write
     needs: build-test
-#    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v4
       - run: git config --global --add safe.directory /__w/helm-ssm/helm-ssm
@@ -37,7 +37,7 @@ jobs:
       - uses: goreleaser/goreleaser-action@v5
         with:
           version: latest
-          args: release --clean -p 4 --snapshot
+          args: release --clean -p 4
           workdir: "cmd/"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
