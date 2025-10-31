@@ -1,6 +1,6 @@
 module github.com/codacy/helm-ssm
 
-go 1.24.8
+go 1.24.9
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
