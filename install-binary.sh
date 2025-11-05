@@ -72,14 +72,38 @@ getDownloadURL() {
   # Use the GitHub API to find the latest version for this project.
   if [ $VERSION = 'latest' ]; then
     local latest_url="https://api.github.com/repos/$PROJECT_GH/releases/$VERSION"
+    local response=""
 
-    if type "curl" > /dev/null; then
-      # Match the exact OS_ARCH pattern in browser_download_url to get the right binary
-      DOWNLOAD_URL=$(curl -sL "$latest_url" | grep "browser_download_url" | grep "${OS}_${ARCH}" | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}' | head -n1)
-    elif type "wget" > /dev/null; then
-      # Match the exact OS_ARCH pattern in browser_download_url to get the right binary
-      DOWNLOAD_URL=$(wget -q -O - "$latest_url" | grep "browser_download_url" | grep "${OS}_${ARCH}" | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}' | head -n1)
+    # Try authenticated request first if GITHUB_TOKEN is available
+    if [ -n "$GITHUB_TOKEN" ]; then
+      echo "Using authenticated GitHub API request"
+      if type "curl" > /dev/null; then
+        response=$(curl -sL -H "Authorization: Bearer $GITHUB_TOKEN" "$latest_url")
+      elif type "wget" > /dev/null; then
+        response=$(wget -q --header="Authorization: Bearer $GITHUB_TOKEN" -O - "$latest_url")
+      fi
+
+      # Check if authentication failed (response contains "Bad credentials" or other error)
+      if echo "$response" | grep -q "Bad credentials\|API rate limit exceeded"; then
+        echo "Warning: GitHub authentication failed or rate limited, falling back to unauthenticated request"
+        response=""
+      fi
     fi
+
+    # Fall back to unauthenticated request if no token or authentication failed
+    if [ -z "$response" ]; then
+      if [ -z "$GITHUB_TOKEN" ]; then
+        echo "Using unauthenticated GitHub API request (rate limited to 60 requests/hour)"
+      fi
+      if type "curl" > /dev/null; then
+        response=$(curl -sL "$latest_url")
+      elif type "wget" > /dev/null; then
+        response=$(wget -q -O - "$latest_url")
+      fi
+    fi
+
+    # Extract the download URL from the response
+    DOWNLOAD_URL=$(echo "$response" | grep "browser_download_url" | grep "${OS}_${ARCH}" | awk '/"browser_download_url":/{gsub( /[,"]/,"", $2); print $2}' | head -n1)
 
     # Validate that a download URL was found
     if [ -z "$DOWNLOAD_URL" ]; then
