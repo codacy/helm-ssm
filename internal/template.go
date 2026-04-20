@@ -10,6 +10,7 @@ import (
 
 	"github.com/Masterminds/sprig"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
@@ -138,8 +139,9 @@ func handleOptions(options []string) (map[string]string, error) {
 func newAWSSession(profile string) *session.Session {
 	// Specify profile for config and region for requests
 	session := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-		Profile:           profile,
+		SharedConfigState:       session.SharedConfigEnable,
+		Profile:                 profile,
+		AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
 	}))
 	return session
 }
